@@ -1,0 +1,7 @@
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\bin\Debug\Netflix Player.exe
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\bin\Debug\Netflix Player.pdb
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\obj\x86\Debug\Netflix_Player.Form1.resources
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\obj\x86\Debug\Netflix_Player.Properties.Resources.resources
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\obj\x86\Debug\Netflix Player.csproj.GenerateResource.Cache
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\obj\x86\Debug\Netflix Player.exe
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\obj\x86\Debug\Netflix Player.pdb

@@ -1,0 +1,15 @@
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\bin\Release\NetPlay.exe
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\bin\Release\NetPlay.pdb
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\obj\x86\Release\Netflix_Player.Form1.resources
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\obj\x86\Release\Netflix_Player.Properties.Resources.resources
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\obj\x86\Release\Netflix Player.csproj.GenerateResource.Cache
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\obj\x86\Release\NetPlay.exe
+G:\Dropbox\Programming\Junk\Netflix Player\Netflix Player\obj\x86\Release\NetPlay.pdb
+G:\Dropbox\Programming\Netflix Player\Netflix Player\obj\x86\Release\NetPlay.exe
+G:\Dropbox\Programming\Netflix Player\Netflix Player\obj\x86\Release\NetPlay.pdb
+G:\Dropbox\Programming\Netflix Player\Netflix Player\bin\Release\NetPlay.exe
+G:\Dropbox\Programming\Netflix Player\Netflix Player\bin\Release\NetPlay.pdb
+G:\Dropbox\Programming\Netflix Player\Netflix Player\obj\x86\Release\Netflix_Player.Form1.resources
+G:\Dropbox\Programming\Netflix Player\Netflix Player\obj\x86\Release\Netflix_Player.Properties.Resources.resources
+G:\Dropbox\Programming\Netflix Player\Netflix Player\obj\x86\Release\Netflix Player.csproj.GenerateResource.Cache
+G:\Dropbox\Programming\Netflix Player\Netflix Player\obj\x86\Release\Netflix Player.csprojResolveAssemblyReference.cache
