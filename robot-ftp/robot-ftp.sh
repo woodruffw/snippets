@@ -15,10 +15,7 @@ function usage()
 	echo "Usage: $0 <IP file> <message file>"
 }
 
-if [[ ! -e $1 || ! -e $2 ]] ; then
-	usage
-	exit
-fi
+[[ ! -e $1 || ! -e $2 ]] && usage ; exit 1
 
 FTPFILE=$1
 MSGFILE=$2
@@ -52,3 +49,5 @@ ftp -n $IP <<EOFTP > /dev/null
 	bye
 EOFTP
 done
+
+exit 0
