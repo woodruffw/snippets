@@ -13,9 +13,9 @@ function usage()
 if [ ! -d "$1" ] ; then
 	printf "Error: no such directory\n"
 	usage
+	exit 1;
 else
 	cp -r "$1/." "$1/../"
 	rm -r "$1"
+	exit 0;
 fi
-
-exit 0
