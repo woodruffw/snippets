@@ -21,11 +21,13 @@ my $school_id = shift || die "Usage: nycdoe-attendance-fetch.pl [\"school name\"
 my $xml_data = get($attendance_url);
 my $decoded_xml_data = XMLin($xml_data);
 
-foreach (@{$decoded_xml_data->{'item'}}) {
+foreach (@{$decoded_xml_data->{'item'}})
+{
 	if (($_->{'SCHOOL_NAME'} eq uc($school_id)) || ($_->{'DBN'} eq uc($school_id)))
 	{
 		print "School: ", $_->{'SCHOOL_NAME'}, "\n";
 		print "Attendance: ", $_->{'ATTN_PCT'}, "% as of ", split_date($_->{'ATTN_DATE_YMD'}), "\n";
+		last;
 	}
 }
 
