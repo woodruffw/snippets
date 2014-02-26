@@ -17,6 +17,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 static uint32_t twister[624];
 static uint32_t index = 0;
@@ -81,4 +82,6 @@ int main(void)
 	init(238);
 	printf("%lu\n", (unsigned long) get());
 	*/
+
+	return EXIT_SUCCESS;
 }
