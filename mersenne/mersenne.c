@@ -21,6 +21,9 @@
 static uint32_t twister[624];
 static uint32_t index = 0;
 
+/*	init
+	initializes the PRNG, setting the first element to the seed
+*/
 void init(uint32_t seed)
 {
 	index = 0;
@@ -33,6 +36,9 @@ void init(uint32_t seed)
 	}
 }
 
+/*	generate
+	generates (fills) the array of 624 uints with untempered values
+*/
 void generate(void)
 {
 	for (int i = 0; i < 624; i++)
@@ -47,6 +53,9 @@ void generate(void)
 	}
 }
 
+/*	get
+	returns a single number from the array based upon the current index, tempering it in the process
+*/
 uint32_t get(void)
 {
 	if (index == 0)
