@@ -15,7 +15,7 @@ function usage()
 	echo "Usage: $0 <IP file> <message file>"
 }
 
-[[ ! -e $1 || ! -e $2 ]] && usage ; exit 1
+[[ ! -e $1 || ! -e $2 ]] && usage && exit 1
 
 FTPFILE=$1
 MSGFILE=$2
