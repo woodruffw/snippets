@@ -34,7 +34,7 @@ if ($#ARGV == 0)
 elsif ($#ARGV == 2)
 {
 	$word = $ARGV[0];
-	$def_count = $ARGV[2];
+	$def_count = $ARGV[2] - 1;
 }
 else
 {
