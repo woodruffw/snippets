@@ -26,5 +26,5 @@ while (1)
 {
 	my $fortune = `fortune -s -n 140`;
 	my $result = $twitter->update($fortune);
-	sleep(900);
+	sleep(3600);
 }
