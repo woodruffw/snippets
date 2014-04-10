@@ -3,7 +3,7 @@ snippets
 
 This is a collection of short scripts and programs.
 
-They are described in more detail on [my website](http://www.superchillspot.com/projects/snippets.html), and are **not** documented here.
+They are described in more detail on [my website](http://www.woodruffw.us/realsite/projects/snippets.html), and are **not** documented here.
 
 Feel free to use them, though. 
 
