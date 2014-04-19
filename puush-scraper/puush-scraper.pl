@@ -16,7 +16,8 @@ use warnings;
 use WWW::Mechanize;
 use HTTP::Response;
 
-my @table = (0..9, 'a'..'z', 'A'..'Z');
+my @main_table = (0..9, 'a'..'z', 'A'..'Z');
+my @prefix_table = (0, 4, 7, 8); # these seem to be the most common first digits on puu.sh URLs
 
 my $num_files = shift || die "Usage: puush-scraper.pl <number of files>\n";
 my $mech = WWW::Mechanize->new(agent => 'puush-scraper/perl/iamarobot', autocheck => 0);
@@ -26,7 +27,7 @@ mkdir "scrape";
 my $file_count = 1;
 while ($file_count <= $num_files)
 {
-	my $item = $table[int(rand(62))] . $table[int(rand(62))] . $table[int(rand(62))] . $table[int(rand(62))] . $table[int(rand(62))];
+	my $item = $prefix_table[int(rand(4))] . $main_table[int(rand(62))] . $main_table[int(rand(62))] . $main_table[int(rand(62))] . $main_table[int(rand(62))];
 	my $url = "http://www.puu.sh/$item";
 	my $response = $mech->get($url);
 
