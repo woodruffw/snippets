@@ -30,11 +30,11 @@ while ($file_count <= $num_files)
 	my $item = $prefix_table[int(rand(4))] . $main_table[int(rand(62))] . $main_table[int(rand(62))] . $main_table[int(rand(62))] . $main_table[int(rand(62))];
 	my $url = "http://www.puu.sh/$item";
 	my $response = $mech->get($url);
+	my $content = $mech->ct();
 
-	if ($response->is_success)
+	if ($response->is_success && !($content =~ /text/)) # ignore access denied responses
 	{
 		print "FILE FOUND ($item): $file_count out of $num_files\n";
-		my $content = $mech->ct();
 
 		if ($content =~ /jpeg/)
 		{
@@ -47,10 +47,6 @@ while ($file_count <= $num_files)
 		elsif ($content =~ /gif/)
 		{
 			$mech->save_content("scrape/$item.gif", decoded_by_headers => 1);
-		}
-		elsif ($content =~ /text/)
-		{
-			$mech->save_content("scrape/$item.txt", decoded_by_headers => 1);
 		}
 		else
 		{
