@@ -18,11 +18,9 @@ int main(void)
 
 	for (int i = 0; instr[i]; i++)
 	{
-		instr[i] = toupper((int) instr[i]);
-
 		if (isalpha(instr[i]))
 		{
-			if (instr[i] <= 77)
+			if ((instr[i] >= 65 && instr[i] <= 77) || (instr[i] >= 97 && instr[i] <= 109))
 				instr[i] += 13;
 			else
 				instr[i] -= 13;
