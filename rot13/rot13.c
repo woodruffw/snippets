@@ -13,21 +13,23 @@
 
 int main(void)
 {
-	char instr[1024];
-	fgets(instr, 1024, stdin);
+	char buf[1024];
 
-	for (int i = 0; instr[i]; i++)
+	do
 	{
-		if (isalpha(instr[i]))
+		for (int i = 0; buf[i]; i++)
 		{
-			if ((instr[i] >= 65 && instr[i] <= 77) || (instr[i] >= 97 && instr[i] <= 109))
-				instr[i] += 13;
-			else
-				instr[i] -= 13;
+			if (isalpha(buf[i]))
+			{
+				if ((buf[i] >= 65 && buf[i] <= 77) || (buf[i] >= 97 && buf[i] <= 109))
+					buf[i] += 13;
+				else
+					buf[i] -= 13;
+			}
 		}
-	}
 
-	printf("%s", instr);
+		printf("%s", buf);
+	} while (fgets(buf, 1024, stdin));
 
 	return EXIT_SUCCESS;
 }
