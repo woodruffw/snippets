@@ -39,7 +39,7 @@ elsif ($#ARGV == 2)
 else
 {
 	&usage();
-	die;
+	exit 0;
 }
 
 $urban_url .= $word;
