@@ -11,6 +11,7 @@ alias gdmom='git diff master origin/master'
 alias gp='git push'
 alias gpom='git push origin master'
 alias gb='git branch'
+alias gbd='git branch -d'
 alias gck='git checkout'
 alias gckb='git checkout -b'
 alias grao='git remote add origin'
@@ -22,3 +23,8 @@ alias gmv='git mv'
 alias gr='git reset'
 alias grm='git rm'
 alias gcm='git commit -m'
+
+function gpod()
+{
+	git push origin :$1
+}
