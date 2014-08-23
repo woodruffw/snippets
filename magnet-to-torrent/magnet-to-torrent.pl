@@ -17,8 +17,12 @@ use WWW::Mechanize;
 
 my $magnet = shift || die "Usage: magnet-to-torrent.pl <\"magnet link\">\n";
 my $url = 'http://magnet2torrent.com/';
-my $mech = WWW::Mechanize->new(agent => 'magnet-to-torrent/perl/iamarobot');
+my $mech = WWW::Mechanize->new(agent => 'magnet-to-torrent/perl/iamarobot', ssl_opts => {SSL_verify_mode => qw/IO::Socket::SSL::SSL_VERIFY_NONE/, verify_hostname => 0});
 $mech->get($url);
 
 my $result = $mech->submit_form(form_number => 1, fields => { magnet => $magnet });
+my @links = $mech->links();
+
+$mech = WWW::Mechanize->new(agent => 'magnet-to-torrent/perl/iamarobot', ssl_opts => {SSL_verify_mode => qw/IO::Socket::SSL::SSL_VERIFY_NONE/, verify_hostname => 0});
+$mech->get($links[7]->url());
 $mech->save_content(time() . 'x' . rand() . '.torrent');
