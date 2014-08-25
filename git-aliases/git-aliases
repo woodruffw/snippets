@@ -21,6 +21,7 @@ alias gmum='git merge upstream/master'
 alias gcln='git clone'
 alias gmv='git mv'
 alias gr='git reset'
+alias grhh='git reset --hard HEAD'
 alias grm='git rm'
 alias gcm='git commit -m'
 
@@ -28,3 +29,4 @@ function gpod()
 {
 	git push origin :$1
 }
+
