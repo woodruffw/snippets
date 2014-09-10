@@ -13,7 +13,6 @@ import time
 from_address = raw_input("\"Sender\": ")
 to_address = raw_input("Recipient: ")
 subject = raw_input("Subject: ")
-acc = []
 print "##### Complete message with EOF (^D) #####"
 message = sys.stdin.read()
 time = time.strftime("%a, %d %b %Y %H:%M:%S -0500", time.localtime())
