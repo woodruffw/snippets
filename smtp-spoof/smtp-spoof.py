@@ -9,16 +9,22 @@
 import sys
 import socket
 import time
+import dns.resolver
 
+time = time.strftime("%a, %d %b %Y %H:%M:%S -0500", time.localtime())
 from_address = raw_input("\"Sender\": ")
 to_address = raw_input("Recipient: ")
+try:
+	mx_domain = dns.resolver.query(str.split(to_address, '@')[1], 'MX')[0].exchange.to_text()[:-1]
+except Exception, e:
+	print "Fatal error in resolving recipient domain. Exiting."
+	sys.exit(-1)
 subject = raw_input("Subject: ")
 print "##### Complete message with EOF (^D) #####"
 message = sys.stdin.read()
-time = time.strftime("%a, %d %b %Y %H:%M:%S -0500", time.localtime())
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.connect(("aspmx.l.google.com", 25))
+sock.connect((mx_domain, 25))
 sock.recv(1024)
 sock.sendall("HELO notreal.com\r\n")
 sock.recv(1024)
