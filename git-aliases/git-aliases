@@ -5,28 +5,50 @@
 #  Licensed under the MIT License (http://opensource.org/licenses/MIT)
 
 alias gi='git init'
-alias ga='git add'
+alias ga='git add --all'
 alias gd='git diff'
 alias gdmom='git diff master origin/master'
 alias gp='git push'
 alias gpom='git push origin master'
 alias gb='git branch'
-alias gbd='git branch -d'
+alias gbd='git branch -D'
 alias gck='git checkout'
 alias gckb='git checkout -b'
+alias gckm='git checkout master'
 alias grao='git remote add origin'
 alias grau='git remote add upstream'
+alias gf='git fetch'
 alias gfu='git fetch upstream'
+alias gfo='git fetch origin'
+alias gm='git merge'
 alias gmum='git merge upstream/master'
+alias gmom='git merge origin/master'
 alias gcln='git clone'
 alias gmv='git mv'
-alias gr='git reset'
-alias grhh='git reset --hard HEAD'
+alias gr='git remote'
+alias grst='git reset'
+alias grrh='git reset --hard HEAD'
 alias grm='git rm'
 alias gcm='git commit -m'
+alias gl='git log'
+alias gsl='git shortlog'
+alias ggc='git gc'
+alias gsg='git stage'
 
 function gpod()
 {
 	git push origin :$1
+}
+
+function quickcommit()
+{
+	git add -A .
+	git commit -m "commit @ $(date)"
+	git push origin master
+}
+
+function gfg()
+{
+	git clone https://github.com/woodruffw/$1.git
 }
 
