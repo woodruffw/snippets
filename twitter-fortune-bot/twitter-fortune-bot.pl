@@ -15,10 +15,10 @@ use warnings;
 
 use Net::Twitter;
 
-my $consumer_key = "";
-my $consumer_secret = "";
-my $token = "";
-my $token_secret = "";
+my $consumer_key = %ENV{TWITTER_CONSUMER_KEY};
+my $consumer_secret = %ENV{TWITTER_CONSUMER_SECRET};
+my $token = %ENV{TWITTER_TOKEN};
+my $token_secret = %ENV{TWITTER_TOKEN_SECRET};
 
 my $twitter = Net::Twitter->new(traits => [qw/API::RESTv1_1/], consumer_key => $consumer_key, consumer_secret => $consumer_secret, access_token => $token, access_token_secret => $token_secret, ssl => 1);
 
