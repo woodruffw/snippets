@@ -13,9 +13,9 @@
 var webshot = require('webshot')
 
 var options = {
-	shotsize: {
-		width: 'window',
-		height: 'window'
+	shotSize: {
+		width: 'all',
+		height: 'all'
 	},
 	useragent: 'Mozilla/5.0 (webshot-screenshot.js; )'
 }
