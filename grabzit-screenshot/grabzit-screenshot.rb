@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require 'grabzit'
 
 unless ARGV.length == 2
