@@ -14,8 +14,8 @@ var webshot = require('webshot')
 
 var options = {
 	shotsize: {
-		width: 'all',
-		height: 'all'
+		width: 'window',
+		height: 'window'
 	},
 	useragent: 'Mozilla/5.0 (webshot-screenshot.js; )'
 }
@@ -24,7 +24,7 @@ var args = process.argv.slice(2);
 
 if (args.length != 2)
 {
-	sys.print("Usage: " + process.argv[1] + "<url> <file>");
+	console.log("Usage: " + process.argv[1] + "<url> <file>");
 	process.exit(1);
 }
 
