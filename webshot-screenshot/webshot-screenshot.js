@@ -17,7 +17,7 @@ var options = {
 		width: 'all',
 		height: 'all'
 	},
-	useragent: 'Mozilla/5.0 (webshot-screenshot.js; )'
+	useragent: 'Mozilla/5.0 (webshot-screenshot.js; https://github.com/woodruffw/snippets/blob/master/webshot-screenshot/webshot-screenshot.js)'
 }
 
 var args = process.argv.slice(2);
