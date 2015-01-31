@@ -13,6 +13,7 @@ import dns.resolver
 
 time = time.strftime("%a, %d %b %Y %H:%M:%S -0500", time.localtime())
 from_address = raw_input("\"Sender\": ")
+reply_to = raw_input("Reply-To: ")
 to_address = raw_input("Recipient: ")
 try:
 	mx_domain = dns.resolver.query(str.split(to_address, '@')[1], 'MX')[0].exchange.to_text()[:-1]
@@ -37,6 +38,7 @@ sock.sendall("From: \"" + from_address + "\" <" + from_address + ">\r\n")
 sock.sendall("To: \"" + to_address + "\" <" + to_address + ">\r\n")
 sock.sendall("Date: " + time + "\r\n")
 sock.sendall("Subject: " + subject + "\r\n")
+sock.sendall("Reply-To: " + reply_to + "\r\n")
 sock.sendall(message + "\r\n")
 sock.sendall(".\r\n")
 sock.recv(1024)
