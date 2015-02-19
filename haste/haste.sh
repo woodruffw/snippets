@@ -6,7 +6,7 @@
 # Author: William Woodruff
 # Licensed under the MIT License: http://opensource.org/licenses/MIT
 
-if [[ -z "${1}" || "${1}" =~ "-" ]]; then
+if [[ -z "${1}" || "${1}" = "-" ]]; then
 	data=$(cat)
 elif [[ -f "${1}" ]]; then
 	data=$(cat ${1})
