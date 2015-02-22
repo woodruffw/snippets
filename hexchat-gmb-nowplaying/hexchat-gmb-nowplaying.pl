@@ -1,5 +1,3 @@
-#!/usr/bin/env perl
-
 #	hexchat-gmb-nowplaying.pl
 #	Gets and displays information about the current song in gmusicbrowser.
 #	Author: William Woodruff
