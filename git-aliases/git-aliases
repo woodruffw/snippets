@@ -27,13 +27,22 @@ alias gcln='git clone'
 alias gmv='git mv'
 alias gr='git remote'
 alias grst='git reset'
-alias grrh='git reset --hard HEAD'
+alias grhh='git reset --hard HEAD'
 alias grm='git rm'
-alias gcm='git commit -m'
 alias gl='git log'
 alias gsl='git shortlog'
 alias ggc='git gc'
 alias gsg='git stage'
+alias gst='git status'
+
+function gcm()
+{
+	if ls | grep --quiet "[Mm]akefile" ; then
+		make clean > /dev/null
+	fi
+
+	git commit -m "$1"
+}
 
 function gpod()
 {
