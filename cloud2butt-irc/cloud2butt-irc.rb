@@ -29,7 +29,7 @@ bot = Cinch::Bot.new do
 		m.reply m.message.gsub(/#{$TRIGGER}/i, 'butt')
 	end
 
-	on :message, /^[.!:](?:src)|(?:source)/ do |m|
+	on :message, /^[.!:]source$/ do |m|
 		m.reply 'https://github.com/woodruffw/snippets/blob/master/cloud2butt-irc/cloud2butt-irc.rb'
 	end
 end
