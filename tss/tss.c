@@ -63,10 +63,8 @@ int main(int argc, char const *argv[])
 
 	png_row = malloc(3 * width * sizeof (png_byte));
 
-	for (y = 0; y < height; y++)
-	{
-		for (x = 0; x < width; x++)
-		{
+	for (y = 0; y < height; y++) {
+		for (x = 0; x < width; x++) {
 			unsigned long pixel = XGetPixel(image, x, y);
 
 			png_byte *idx = &(png_row[x*3]);
@@ -74,15 +72,13 @@ int main(int argc, char const *argv[])
 			idx[1] = (pixel >> 8) & 0xFF;
 			idx[2] = pixel & 0xFF;
 		}
-
 		png_write_row(png, png_row);
 	}
-
-	png_write_end (png, png_info);
+	png_write_end(png, png_info);
 
 	/* cleanup */
 	free(png_row);
-	png_free_data (png, png_info, PNG_FREE_ALL, -1);
+	png_free_data(png, png_info, PNG_FREE_ALL, -1);
 	png_destroy_write_struct(&png, &png_info);
 	fclose(file);
 	XDestroyImage(image);
