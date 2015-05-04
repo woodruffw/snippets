@@ -55,13 +55,13 @@ int main(int argc, char const *argv[])
 
 	png_init_io(png, file);
 
-	png_set_IHDR (png, png_info, width, height, 8, PNG_COLOR_TYPE_RGB,
+	png_set_IHDR(png, png_info, width, height, 8, PNG_COLOR_TYPE_RGB,
 			PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
 			PNG_FILTER_TYPE_BASE);
 
 	png_write_info(png, png_info);
 
-	png_row = malloc(3 * width * sizeof (png_byte));
+	png_row = malloc(3 * width * sizeof(png_byte));
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
