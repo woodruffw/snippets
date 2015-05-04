@@ -22,13 +22,13 @@ int main(int argc, char const *argv[])
 	XImage *image;
 	int width, height, x, y;
 	FILE *file;
-	png_structp png;
-	png_infop png_info;
-	png_bytep png_row;
+	png_struct *png;
+	png_info *png_info;
+	png_byte *png_row;
 
 	if (argc != 2) {
 		printf("Usage: %s <filename>\n", argv[0]);
-		return 0;
+		return EXIT_SUCCESS;
 	}
 
 	disp = XOpenDisplay(NULL);
@@ -86,5 +86,5 @@ int main(int argc, char const *argv[])
 	XDestroyImage(image);
 	XCloseDisplay(disp);
 
-	return 0;
+	return EXIT_SUCCESS;
 }
