@@ -67,13 +67,15 @@ int main(int argc, char const *argv[])
 		for (x = 0; x < width; x++) {
 			unsigned long pixel = XGetPixel(image, x, y);
 
-			png_byte *idx = &(png_row[x*3]);
-			idx[0] = (pixel >> 16) & 0xFF;
-			idx[1] = (pixel >> 8) & 0xFF;
-			idx[2] = pixel & 0xFF;
+			png_byte *idx = &(png_row[x * 3]);
+			idx[0] = (pixel >> 16) & 0xFF; /* red */
+			idx[1] = (pixel >> 8) & 0xFF; /* green */
+			idx[2] = (pixel & 0xFF); /* blue */
 		}
+
 		png_write_row(png, png_row);
 	}
+
 	png_write_end(png, png_info);
 
 	/* cleanup */
