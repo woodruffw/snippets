@@ -51,8 +51,6 @@ int main(int argc, char const *argv[])
 	png_info = png_create_info_struct(png);
 	assert(png_info);
 
-	setjmp(png_jmpbuf(png));
-
 	png_init_io(png, file);
 
 	png_set_IHDR(png, png_info, width, height, 8, PNG_COLOR_TYPE_RGB,
