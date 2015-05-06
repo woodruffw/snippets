@@ -17,7 +17,7 @@ class Helper
 	def self.human_size(n, base = 8)
 		return "0" if n.nil?
 		
-		units = ["B", "KB", "MB", "GB"]
+		units = ['B', 'KB', 'MB', 'GB']
 	
 		unit = units[0]
 		size = n
@@ -66,13 +66,13 @@ ARGV.delete_if do |x|
 	elsif (i == 2)
 		@@file_number = x
 	else
-		if (x == "-d")
+		if (x == '-d')
 			ARGV.shift
 			@@download_folder = File.expand_path(ARGV.first)+"/"
 			if (!File.directory?(@@download_folder))
 				abort("'#{@@download_folder}' is not a folder.")
 			end
-		elsif (x == "-c")
+		elsif (x == '-c')
 			ARGV.shift
 			@@channel_name = ARGV.first
 		end
@@ -98,20 +98,20 @@ class XDCC
 	def initialize(server, optional_channel)
 		@bot = Cinch::Bot.new do
 			configure do |c|
-				c.server = server || "irc.rizon.net"
-				c.nick = "Guest" + Time.now.to_f.to_s.gsub(".", "")[10..-1]
+				c.server = server || 'irc.rizon.net'
+				c.nick = 'Guest' + Time.now.to_f.to_s.gsub(".", "")[10..-1]
 				c.channels = ["##{optional_channel}"] if optional_channel
 				c.plugins.plugins = [XDCCHandler]
 			end
 		end
 
-		puts "Starting bot..."
+		puts 'Starting bot...'
 		@bot_thread = Thread.new(@bot) do |bot|
 			bot.loggers.level = :fatal
 			bot.start
 		end
 
-		puts "Connecting..."
+		puts 'Connecting...'
 
 		while (@bot.plugins.first.nil?)
 			sleep 1
@@ -133,7 +133,7 @@ class XDCCHandler
 
 	listen_to :connect, method: :on_connect
 	def on_connect(m)
-		puts "Connected."
+		puts 'Connected.'
 		@connected = true
 		ask_for_dl
 	end
