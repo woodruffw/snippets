@@ -26,7 +26,9 @@ bot = Cinch::Bot.new do
 	end
 
 	on :message, /#{$TRIGGER}/i do |m|
-		m.reply m.message.gsub(/#{$TRIGGER}/i, 'butt')
+		if Random.rand(1..5) == 1
+			m.reply m.message.gsub(/#{$TRIGGER}/i, 'butt')
+		end
 	end
 
 	on :message, /^[.!:]source$/ do |m|
