@@ -3,9 +3,9 @@
 #	haiku-critic.rb
 #	A simple Cinch IRC bot that checks whether or not each message is a Haiku.
 #	Author: William Woodruff
-# 	------------------------
-# 	This code is licensed by William Woodruff under the MIT License.
-# 	http://opensource.org/licenses/MIT
+#	------------------------
+#	This code is licensed by William Woodruff under the MIT License.
+#	http://opensource.org/licenses/MIT
 
 require 'cinch'
 
