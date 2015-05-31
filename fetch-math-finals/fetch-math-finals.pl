@@ -16,7 +16,7 @@ use WWW::Mechanize;
 
 $| = 1;
 
-my $course = shift or die "Usage: $0 <course name>\n";
+my $course = shift or die "Usage: $0 <course code>\n";
 my $url = "http://db.math.umd.edu/testbank/?courseNumber=$course&instructor=Any&year=Any&semester=Any&Search=Search";
 my $mech = WWW::Mechanize->new(agent => 'fetch-math-finals/perl/iamarobot (github.com/woodruffw/snippets)');
 my $count = 1;

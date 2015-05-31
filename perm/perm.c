@@ -20,7 +20,7 @@ int main(int argc, char** argv)
 {
 	if (argc != 3 || (argv[1][1] != 's' && argv[1][1] != 'n'))
 	{
-		printf("%s\n", "Usage: perm [-s|-n] <file>");
+		printf("%s\n", "Usage: perm <-s|-n <file>>");
 		return EXIT_FAILURE;
 	}
 

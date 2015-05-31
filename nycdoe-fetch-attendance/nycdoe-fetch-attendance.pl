@@ -16,7 +16,7 @@ use LWP::Simple;
 use XML::Simple;
 
 my $attendance_url = "http://schools.nyc.gov/aboutus/data/attendancexml/";
-my $school_id = shift || die "Usage: nycdoe-attendance-fetch.pl [\"school name\" | DBN]\n";
+my $school_id = shift || die "Usage: nycdoe-attendance-fetch.pl <\"school name\" | DBN>\n";
 
 my $xml_data = get($attendance_url);
 my $decoded_xml_data = XMLin($xml_data);

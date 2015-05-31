@@ -15,7 +15,7 @@ use warnings;
 use Image::Magick;
 
 my $image = Image::Magick->new;
-open(IMAGE, shift || die "Usage: grayscale.pl [image]\n");
+open(IMAGE, shift || die "Usage: grayscale.pl <image>\n");
 $image->Read(file=>\*IMAGE);
 close(IMAGE);
 
