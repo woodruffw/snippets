@@ -29,7 +29,7 @@ if (-e $config_file)
 }
 elsif ($#ARGV == 0)
 {
-	$api_key = shift || die print "Usage: $0 [api-key]\nAlternatively, put the key in ~/.fcpool-fetch-api\n";
+	$api_key = shift || die print "Usage: $0 <api-key>\nAlternatively, put the key in ~/.fcpool-fetch-api\n";
 }
 
 $fcpool_url .= $api_key;

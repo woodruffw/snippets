@@ -30,7 +30,7 @@ if (-e $config_file)
 }
 else
 {
-	$api_key = shift || die "Usage: $0 [api-key]\nAlternatively, put the key in ~/.d2-fetch-api\n";
+	$api_key = shift || die "Usage: $0 <api-key>\nAlternatively, put the key in ~/.d2-fetch-api\n";
 }
 
 $d2pool_url .= $api_key;
