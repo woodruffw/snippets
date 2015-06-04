@@ -1,8 +1,10 @@
 #!/usr/bin/env ruby
 
 #	smtp-spoof-ruby.rb
-#	A basic SMTP email spoofer, rewritten in Ruby.
 #	Author: William Woodruff
+#	------------------------
+#	A basic SMTP email spoofer, rewritten in Ruby.
+#	------------------------
 #	This code is licensed by William Woodruff under the MIT License.
 #	http://opensource.org/licenses/MIT
 
