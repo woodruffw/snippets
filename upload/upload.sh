@@ -30,7 +30,7 @@ file=${1}
 
 info "Trying pomf.se first..."
 
-output=$(curl --silent -sf -F files[]="@${file}" "https://pomf.se/upload.php")
+output=$(curl --silent -sf -F files[]="@${file}" "http://pomf.se/upload.php")
 
 if [[ -n "${output}" ]]; then
 	info "Succeeded."
