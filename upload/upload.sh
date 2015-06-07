@@ -30,7 +30,7 @@ file=${1}
 
 info "Trying pomf.se first..."
 
-output=$(curl --silent -sf -F files[]="@$file" "https://pomf.se/upload.php")
+output=$(curl --silent -sf -F files[]="@${file}" "https://pomf.se/upload.php")
 
 if [[ -n "${output}" ]]; then
 	info "Succeeded."
@@ -38,7 +38,7 @@ if [[ -n "${output}" ]]; then
 	url="https://a.pomf.se/${slug}"
 else
 	info "Failed. Trying teknik.io..."
-	output=$(curl --silent -sf -F file="@$file" "https://api.teknik.io/upload/post")
+	output=$(curl --silent -sf -F file="@${file}" "https://api.teknik.io/upload/post")
 	url=$(echo ${output} | jq -M -r ".[0].results.file.url")
 fi
 
