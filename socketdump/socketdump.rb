@@ -3,7 +3,7 @@
 #	socketdump.rb
 #	Author: William Woodruff
 #	------------------------
-#	Dumps a given file onto a connected socket, headed by a SHA1 hash and name.
+#	Dumps a file into a socket, base64 encoded and headed by a hash and name.
 #	Useful for quickly shooting data between two machines.
 #	Complemented by socketslurp.rb
 #	------------------------

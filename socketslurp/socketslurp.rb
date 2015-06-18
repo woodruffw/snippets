@@ -3,7 +3,7 @@
 #	socketslurp.rb
 #	Author: William Woodruff
 #	------------------------
-#	Reads a file from a socket, validating it using a SHA1 hash and saving it.
+#	Reads a base64 encoded file from a socket, validating it using a SHA1 hash.
 #	Useful for quickly shooting data between two machines.
 #	Complemented by socketdump.rb
 #	------------------------
