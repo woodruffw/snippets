@@ -3,9 +3,9 @@
 #	verhoeff.pl
 #	Author: William Woodruff
 #	------------------------
-#	A table implementation of the Verhoeff generation and validation algorithms.
-#	The Verhoeff algorithm is more complex than the Luhn validation algorithm,
-#	but detects 100% of single-digit and two-digit transposition errors.
+#	A table implementation of the Verhoeff check digit generation and validation
+#	algorithms. The Verhoeff algorithm is more complex than the Luhn validation
+#	algorithm, but detects more adjacent two-digit transposition errors.
 #	------------------------
 #	This code is licensed by William Woodruff under the MIT License.
 #	http://opensource.org/licenses/MIT
@@ -74,13 +74,13 @@ sub verhoeff {
 	@n = reverse @n;
 
 	if ($cmd eq "validate" && $c == 0) {
-		print @n, " is valid!\n"
+		print @n, " is valid!\n";
 	}
 	elsif ($cmd eq "generate") {
 		$n[$#n] = $inv[$c];
-		print @n, " is your number with a Verhoeff checksum.\n"
+		print @n, " is your number with a Verhoeff check digit.\n";
 	}
 	else {
-		print @n, " is not valid!\n"
+		print @n, " is not valid!\n";
 	}
 }
