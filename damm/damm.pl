@@ -45,8 +45,8 @@ sub damm {
 	my @n = split('', shift);
 	my $c = 0;
 
-	for (my $i = 0; $i < scalar @n; $i++) {
-		$c = $table[$c][$n[$i]];
+	foreach (@n) {
+		$c = $table[$c][$_];
 	}
 
 	if ($cmd eq "validate" && $c == 0) {
