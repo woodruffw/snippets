@@ -14,7 +14,7 @@ use warnings;
 my $number = shift;
 
 if (!$number || $number !~ /^\d+$/) {
-	print "Usage: $0 <upc code>\n";
+	print "Usage: $0 <upc>\n";
 	exit;
 }
 
