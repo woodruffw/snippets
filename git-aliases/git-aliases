@@ -1,63 +1,84 @@
 #  git-aliases
 #  Author: William Woodruff, 2014
 #  aliases for common git commands, in no particular order
-#  tested on sh, bash, and zsh
 #  Licensed under the MIT License (http://opensource.org/licenses/MIT)
 
+alias g='git'
+__git_complete g _git
+
 alias gi='git init'
+__git_complete gi _git_init
+
 alias ga='git add --all'
+__git_complete ga _git_add
+
 alias gd='git diff'
 alias gdmom='git diff master origin/master'
+__git_complete gd _git_diff
+
 alias gp='git push'
 alias gpom='git push origin master'
+__git_complete gp _git_push
+
 alias gb='git branch'
 alias gbd='git branch -D'
+__git_complete gb _git_branch
+
 alias gck='git checkout'
 alias gckb='git checkout -b'
 alias gckm='git checkout master'
+__git_complete gck _git_checkout
+
+alias gr='git remote'
 alias grao='git remote add origin'
 alias grau='git remote add upstream'
+__git_complete gr _git_remote
+
 alias gf='git fetch'
 alias gfu='git fetch upstream'
 alias gfo='git fetch origin'
+__git_complete gf _git_fetch
+
 alias gm='git merge'
 alias gmum='git merge upstream/master'
 alias gmom='git merge origin/master'
-alias gcln='git clone'
+__git_complete gm _git_merge
+
+alias gc='git clone'
+__git_complete gc _git_clone
+
 alias gmv='git mv'
-alias gr='git remote'
+__git_complete gmv _git_mv
+
 alias grst='git reset'
 alias grhh='git reset --hard HEAD'
+__git_complete grst _git_reset
+
 alias grm='git rm'
-alias gl='git log'
-alias gsl='git shortlog'
-alias ggc='git gc'
-alias gsg='git stage'
+__git_complete grm _git_rm
+
 alias gst='git status'
+__git_complete gst _git_status
 
 function gcm()
 {
-	if ls | grep --quiet "[Mm]akefile" ; then
-		make clean > /dev/null
-	fi
-
-	git commit -m "$1"
+	git commit -m "${@}"
 }
 
 function gpod()
 {
-	git push origin :$1
+	git push origin :${1}
 }
 
 function quickcommit()
 {
 	git add -A .
-	git commit -m "commit @ $(date)"
-	git push origin master
+	git commit -m "commit @ $(date) (${1:-no commit msg})"
+	git push
 }
 
 function gfg()
 {
-	git clone https://github.com/woodruffw/$1.git
+	git clone "https://github.com/woodruffw/${1}.git"
 }
 
