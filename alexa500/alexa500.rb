@@ -3,7 +3,7 @@
 #	alexa500.rb
 #	Author: William Woodruff
 #	------------------------
-#	Scrapes the Alexa.com 'topsites' ranking for the 500 most trafficked
+#	Scrapes the Alexa.com 'top sites' ranking for the 500 most trafficked
 #	websites using Nokogiri and dumps them to stdout.
 #	------------------------
 #	This code is licensed by William Woodruff under the MIT License.
