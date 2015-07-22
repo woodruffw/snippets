@@ -12,10 +12,11 @@
 require 'nokogiri'
 require 'open-uri'
 
+base_url = "http://www.alexa.com/topsites/global;"
 sites = []
 
 (0..20).each do |i|
-	html = Nokogiri::HTML(open("http://www.alexa.com/topsites/global;#{i}").read)
+	html = Nokogiri::HTML(open("#{base_url}#{i}").read)
 
 	sites << html.css('li[class=site-listing]').map do |li|
 		li.css('a').first.text
