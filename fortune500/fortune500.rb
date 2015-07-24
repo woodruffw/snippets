@@ -13,8 +13,8 @@ require 'nokogiri'
 require 'open-uri'
 
 base_url = "http://www.uspages.com"
-
 main_page = Nokogiri::HTML(open("#{base_url}/fortune500.htm").read)
+sites = []
 
 main_page.css('ol').each do |ol|
 	ol.css('a').each do |a|
@@ -26,8 +26,10 @@ main_page.css('ol').each do |ol|
 		
 		info.css('ul').first.css('li').each do |li|
 			if li.text =~ /^Website:/
-				puts li.css('a').first.text
+				sites << li.css('a').first.text
 			end
 		end
 	end
 end
+
+puts sites.sort.uniq.join("\n")
