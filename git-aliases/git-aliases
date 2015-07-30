@@ -60,6 +60,9 @@ __git_complete grm _git_rm
 alias gst='git status'
 __git_complete gst _git_status
 
+alias gs='git show'
+__git_complete gs _git_show
+
 function gcm()
 {
 	git commit -m "${@}"
