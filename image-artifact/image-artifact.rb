@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+
+#	image-artifact.rb
+#	Author: William Woodruff
+#	------------------------
+#	Exacerbate artifacts in an image by converting it to a JPEG and
+#	reading/writing it multiple times at low qualities. The final result is
+#	saved as "artifact.jpg".
+#	------------------------
+#	This code is licensed by William Woodruff under the MIT License.
+#	http://opensource.org/licenses/MIT
+
+require 'rmagick'
+
+def usage
+	puts "Usage: #{$PROGRAM_NAME} <image> <count>"
+	puts "\t<image> - the image to operate on"
+	puts "\t<count> - the number of times to cycle open/write on the file (1+)"
+	exit 1
+end
+
+usage if ARGV.size < 2
+
+file, count = ARGV.shift 2
+
+count = count.to_i
+
+usage if !File.file?(file) || !(count > 0)
+
+img = Magick::Image.read(file).first
+img.write('artifact.jpg') do
+	self.quality = rand 1..75
+end
+
+(count - 1).times do
+	img = Magick::Image.read('artifact.jpg').first
+	img.write('artifact.jpg') do
+		self.quality = rand 1..75
+	end
+end
