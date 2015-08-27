@@ -6,8 +6,8 @@
 #	Converts flac files into mp3s in bulk.
 #	Requires ffmpeg or avconv and GNU bash 4.0.
 #	------------------------
-#	Author: William Woodruff
-#	Licensed under the MIT License: http://opensource.org/licenses/MIT
+#	This code is licensed by William Woodruff under the MIT License.
+#	http://opensource.org/licenses/MIT
 
 function usage() {
 	printf "Usage: $(basename ${0}) [-sdvh] [directory]\n"
