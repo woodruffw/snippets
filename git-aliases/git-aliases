@@ -3,65 +3,55 @@
 #  aliases for common git commands, in no particular order
 #  Licensed under the MIT License (http://opensource.org/licenses/MIT)
 
+if [[ -f /usr/share/bash-completion/completions/git ]]; then
+	source /usr/share/bash-completion/completions/git
+
+	__git_complete g _git
+	__git_complete gi _git_init
+	__git_complete ga _git_add
+	__git_complete gd _git_diff
+	__git_complete gp _git_push
+	__git_complete gb _git_branch
+	__git_complete gck _git_checkout
+	__git_complete gr _git_remote
+	__git_complete gf _git_fetch
+	__git_complete gm _git_merge
+	__git_complete gc _git_clone
+	__git_complete gmv _git_mv
+	__git_complete grst _git_reset
+	__git_complete grm _git_rm
+	__git_complete gst _git_status
+	__git_complete gs _git_show
+fi
+
 alias g='git'
-__git_complete g _git
-
 alias gi='git init'
-__git_complete gi _git_init
-
 alias ga='git add --all'
-__git_complete ga _git_add
-
 alias gd='git diff'
 alias gdmom='git diff master origin/master'
-__git_complete gd _git_diff
-
 alias gp='git push'
 alias gpom='git push origin master'
-__git_complete gp _git_push
-
 alias gb='git branch'
 alias gbd='git branch -D'
-__git_complete gb _git_branch
-
 alias gck='git checkout'
 alias gckb='git checkout -b'
 alias gckm='git checkout master'
-__git_complete gck _git_checkout
-
 alias gr='git remote'
 alias grao='git remote add origin'
 alias grau='git remote add upstream'
-__git_complete gr _git_remote
-
 alias gf='git fetch'
 alias gfu='git fetch upstream'
 alias gfo='git fetch origin'
-__git_complete gf _git_fetch
-
 alias gm='git merge'
 alias gmum='git merge upstream/master'
 alias gmom='git merge origin/master'
-__git_complete gm _git_merge
-
 alias gc='git clone'
-__git_complete gc _git_clone
-
 alias gmv='git mv'
-__git_complete gmv _git_mv
-
 alias grst='git reset'
 alias grhh='git reset --hard HEAD'
-__git_complete grst _git_reset
-
 alias grm='git rm'
-__git_complete grm _git_rm
-
 alias gst='git status'
-__git_complete gst _git_status
-
 alias gs='git show'
-__git_complete gs _git_show
 
 function gcm()
 {
@@ -76,12 +66,12 @@ function gpod()
 function quickcommit()
 {
 	git add -A .
-	git commit -m "commit @ $(date) (${1:-no commit msg})"
+	git commit -m "${1:-no commit msg}"
 	git push
 }
 
 function gfg()
 {
-	git clone "https://github.com/woodruffw/${1}.git"
+	git clone "https://github.com/$(git config --global github.user)/${1}.git"
 }
 
