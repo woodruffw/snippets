@@ -3,7 +3,9 @@
 #  xdcc.rb
 #  Author: Mahdi Bchetnia, William Woodruff
 #  ------------------------
-#  An Cinch XDCC file fetcher, modified from https://github.com/inket/RubyXDCCGetter
+#  An Cinch XDCC file fetcher.
+#  Modified from https://github.com/inket/RubyXDCCGetter
+#  ------------------------
 #  The original does not appear to be under any license, so this one will
 #  remain in the public domain.
 
