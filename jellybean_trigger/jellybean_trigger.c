@@ -26,7 +26,7 @@ int main(int argc, char **argv)
 	int rc;
 
 	if (argc < 2) {
-		fprintf(stderr, "Usage: %s <command> [arg ...]\n", argv[0]);
+		fprintf(stderr, "Usage: %s <command [arg ...]>\n", argv[0]);
 		return 1;
 	}
 
