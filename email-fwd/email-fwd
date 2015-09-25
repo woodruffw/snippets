@@ -1,0 +1,17 @@
+---
+
+# edit this file as needed and copy it to ~/.email-fwd
+
+forward_to: 'example@example.com' # the receiving address
+
+# the sending addresses
+emails:
+    johndoe@bigcompany.com:
+        imap: imap.bigcompany.com
+        smtp: smtp.bigcompany.com
+        pass: abc123
+    janedoe@megacorp.net:
+        imap: mail.megacorp.net
+        smtp: mail.megacorp.net
+        pass: donotsteal
+    # etc...
