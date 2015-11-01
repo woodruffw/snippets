@@ -46,8 +46,7 @@ player="mpv"
 
 installed "${player}" || fatal "Missing dependency: ${player}"
 
-if installed "livestreamer" && livestreamer --can-handle-url "${1}" \
-	&& ! [[ "${1}" =~ youtu ]]; then
+if installed "livestreamer" && livestreamer --can-handle-url "${1}" && ! [[ "${1}" =~ youtu ]]; then
 	info "Attempting to play with livestreamer"
 	livestreamer --player-no-close --player "${player}" "${1}" best
 elif installed "youtube-dl" && url "${1}"; then
