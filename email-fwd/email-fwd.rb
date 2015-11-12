@@ -28,7 +28,7 @@ hash = YAML::load_file(fwd)
 forward = hash['forward_to']
 
 hash['emails'].each do |email, data|
-	imap = Net::IMAP.new(data['imap'], {ssl: true})
+	imap = Net::IMAP.new(data['imap'], { ssl: { verify_mode: 0 }})
 
 	imap.login(email, data['pass'])
 	imap.select('INBOX')
@@ -46,7 +46,7 @@ hash['emails'].each do |email, data|
 
 			smtp = Net::SMTP.new(data['smtp'], 25)
 			smtp.enable_starttls_auto
-			smtp.start("fwd", email, data['pass'], :plain)
+			smtp.start("localhost", email, data['pass'], (data['auth'] || 'plain').to_sym)
 
 			msg = <<-EOF.unindent
 				From: #{email}
