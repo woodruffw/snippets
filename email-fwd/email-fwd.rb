@@ -46,21 +46,21 @@ hash['emails'].each do |email, data|
 
 			smtp = Net::SMTP.new(data['smtp'], 25)
 			smtp.enable_starttls_auto
-			smtp.start("localhost", email, data['pass'], (data['auth'] || 'plain').to_sym)
+			smtp.start("fwd", email, data['pass'], (data['auth'] || 'plain').to_sym) do |s|
 
-			msg = <<-EOF.unindent
-				From: #{email}
-				To: #{forward}
-				Subject: Fwd: #{envelope.subject}
-				X-Forwarding-Method: fwd.rb
+				msg = <<-EOF.unindent
+					From: #{email}
+					To: #{forward}
+					Subject: Fwd: #{envelope.subject}
+					X-Forwarding-Method: fwd.rb
 
-				Begin forwarded message:
+					Begin forwarded message:
 
-				#{text}
-			EOF
+					#{text}
+				EOF
 
-			smtp.send_message msg, email, forward
-			smtp.finish
+				s.send_message msg, email, forward
+			end
 		end
 	end
 
