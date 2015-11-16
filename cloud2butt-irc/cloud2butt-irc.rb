@@ -18,6 +18,8 @@ $TRIGGER = 'cloud'
 
 bot = Cinch::Bot.new do
 	configure do |c|
+		c.port = 6697
+		c.ssl.use = true
 		c.nick = $BOTNAME
 		c.realname = $BOTNAME
 		c.max_messages = 1
