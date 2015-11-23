@@ -24,11 +24,18 @@ function info() {
 	notify-send --urgency=critical ${@}
 }
 
+function installed() {
+	local cmd=$(command -v "${1}")
+
+	[[ -n  "${cmd}" ]] && [[ -f "${cmd}" ]]
+	return ${?}
+}
+
 function check_dependencies() {
 	local deps=(notify-send zenity xclip curl jq)
 
 	for dep in "${deps[@]}"; do
-		if [[ ! $(which ${dep} 2>/dev/null) ]]; then
+		if ! installed "${dep}" ; then
 			printf "Missing dependency '${dep}', please install it.\n"
 			exit 1
 		fi
