@@ -45,7 +45,7 @@ function flac2mp3() {
 	local mp3_base=$(basename "${mp3_file}")
 
 	verbose "Beginning '${flac_base}' -> '${mp3_base}'."
-	"${conv}" -y -i "${flac_file}" -b:a 320k "${mp3_file}" &> /dev/null 
+	"${conv}" -y -i "${flac_file}" -b:a 320k "${mp3_file}" &> /dev/null
 	verbose "Completed '${mp3_base}'."
 }
 
@@ -54,9 +54,9 @@ function flac2mp3() {
 shopt -s nullglob
 shopt -s globstar
 
-if which ffmpeg > /dev/null; then
+if installed ffmpeg; then
 	conv=ffmpeg
-elif which avconv > /dev/null; then
+elif installed avconv; then
 	conv=avconv
 else
 	error "Could not find either ffmpeg or avconv to convert with"
@@ -91,7 +91,7 @@ if [[ "${sequential}" ]]; then
 	done
 else
 	verbose "Converting in parallel."
-	
+
 	if installed "parallel"; then
 		if [[ -z "${njobs}" ]]; then
 			if installed "nproc"; then
