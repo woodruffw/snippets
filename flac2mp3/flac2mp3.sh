@@ -15,6 +15,7 @@ function usage() {
 	printf "\t-d - delete flac files after conversion\n"
 	printf "\t-v - be verbose\n"
 	printf "\t-h - print this usage information\n"
+	printf "\t-j X - Number of jobs to use"
 	exit 1
 }
 
@@ -27,6 +28,13 @@ function verbose() {
 function error() {
 	>&2 printf "Fatal: ${@}. Exiting.\n"
 	exit 2
+}
+
+function installed() {
+	local cmd=$(command -v "${1}")
+
+	[[ -n  "${cmd}" ]] && [[ -f "${cmd}" ]]
+	return ${?}
 }
 
 function flac2mp3() {
@@ -54,11 +62,12 @@ else
 	error "Could not find either ffmpeg or avconv to convert with"
 fi
 
-while getopts ":sdv" opt; do
+while getopts ":sdvj:" opt; do
 	case "${opt}" in
 		s ) sequential=1 ;;
 		d ) delete=1 ;;
 		v ) verbose=1 ;;
+		j ) njobs=${OPTARG} ;;
 		* )	usage ;;
 	esac
 done
@@ -82,12 +91,23 @@ if [[ "${sequential}" ]]; then
 	done
 else
 	verbose "Converting in parallel."
-
-	for file in "${flacs[@]}"; do
-		flac2mp3 "${file}" &
-	done
-
-	wait
+	
+	if installed "parallel"; then
+		if [[ -z "${njobs}" ]]; then
+			if installed "nproc"; then
+				njobs=$(nproc)
+			else
+				njobs=2
+			fi
+		fi
+		printf '%s\n' "${flacs[@]}" | parallel -j"${njobs}" -q flac2mp3
+	else
+		verbose "'parallel' is not installed, falling back to forking. Job control will NOT work in this mode."
+		for file in "${flacs[@]}"; do
+			flac2mp3 "${file}" &
+		done
+		wait
+	fi
 fi
 
 if [[ "${delete}" ]]; then
