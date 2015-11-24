@@ -91,16 +91,14 @@ if [[ "${sequential}" ]]; then
 	done
 else
 	verbose "Converting in parallel."
-
-	if installed parallel; then
+	if installed "parallel"; then
+        export -f flac2mp3 verbose
+        export conv
 		if [[ -z "${njobs}" ]]; then
-			if installed nproc; then
-				njobs=$(nproc)
-			else
-				njobs=2
-			fi
-		fi
-		printf '%s\n' "${flacs[@]}" | parallel -j"${njobs}" -q flac2mp3
+			printf '%s\n' "${flacs[@]}" | parallel -j+0 -q flac2mp3
+		else
+			printf '%s\n' "${flacs[@]}" | parallel -j"${njobs}" -q flac2mp3
+        fi
 	else
 		verbose "'parallel' is not installed, falling back to forking. Job control will NOT work in this mode."
 		for file in "${flacs[@]}"; do
