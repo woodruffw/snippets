@@ -92,9 +92,9 @@ if [[ "${sequential}" ]]; then
 else
 	verbose "Converting in parallel."
 
-	if installed "parallel"; then
+	if installed parallel; then
 		if [[ -z "${njobs}" ]]; then
-			if installed "nproc"; then
+			if installed nproc; then
 				njobs=$(nproc)
 			else
 				njobs=2
