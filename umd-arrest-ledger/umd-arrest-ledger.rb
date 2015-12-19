@@ -16,9 +16,13 @@ URL = 'http://www.umpd.umd.edu/stats/arrest_report.cfm?year=%{year}'
 
 year = ARGV.shift.to_i
 
-# ledgers before 11/2010 used a different format
-if year.nil? || !year.between?(2011, Time.now.year)
+if year.nil?
 	abort("Usage: #{$PROGRAM_NAME} <year>")
+end
+
+# ledgers before 11/2010 used a different format
+if !year.between?(2010, Time.now.year)
+	abort("Data is only available between 2010 and the current year.")
 end
 
 data = {}

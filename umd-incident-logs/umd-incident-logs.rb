@@ -15,11 +15,19 @@ require 'json'
 
 URL = 'http://www.umpd.umd.edu/stats/incident_logs.cfm?year=%{year}&month=%{month}'
 
+now = Time.now
 month, year = ARGV.shift(2).map(&:to_i)
 
-# reports before 11/2010 used a different format
-if month.nil? || year.nil? || !month.between?(1, 12) || !year.between?(2011, Time.now.year)
+if month.nil? || year.nil?
 	abort("Usage: #{$PROGRAM_NAME} <month> <year>")
+end
+
+# reports before 11/2010 used a different format
+if !(month.between?(11, 12) && year == 2010) &&
+	!(month.between?(1, now.month) && year == now.year) &&
+	!(month.between?(1, 12) && year.between?(2011, now.year - 1))
+
+	abort("Data is only available between 11/2010 and the current month.")
 end
 
 data = {}
