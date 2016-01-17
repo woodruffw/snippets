@@ -32,30 +32,28 @@ opts = {
 }
 
 # prefer mms where available
-providers = {
-	"usc" => "%{number}@email.uscc.net",
-	"alltel" => "%{number}@message.alltel.com",
-	"ting" => "%{number}@message.ting.com",
-	"spring" => "%{number}@messaging.sprintpcs.com",
-	"cellone" => "%{number}@mobile.celloneusa.com",
-	"telus" => "%{number}@msg.telus.com",
-	"acs" => "%{number}@paging.acswireless.com",
-	"rogers" => "%{number}@pcs.rogers.com",
-	"qwest" => "%{number}@qwestmp.com",
-	"tmobile" => "%{number}@tmomail.net",
-	"att" => "%{number}@mms.att.net",
-	"verizon" => "%{number}@vzwpix.com",
-	"republic" => "%{number}@text.republicwireless.com",
-	"cricket" => "%{number}@mms.cricketwireless.net",
-	"virgin" => "%{number}@vmobl.com"
-}
+providers = [
+	"%{number}@email.uscc.net",
+	"%{number}@message.alltel.com",
+	"%{number}@message.ting.com",
+	"%{number}@messaging.sprintpcs.com",
+	"%{number}@mobile.celloneusa.com",
+	"%{number}@msg.telus.com",
+	"%{number}@paging.acswireless.com",
+	"%{number}@pcs.rogers.com",
+	"%{number}@qwestmp.com",
+	"%{number}@tmomail.net",
+	"%{number}@mms.att.net",
+	"%{number}@vzwpix.com",
+	"%{number}@text.republicwireless.com",
+	"%{number}@mms.cricketwireless.net",
+	"%{number}@vmobl.com"
+]
 
-provider, number = ARGV.shift(2)
+number = ARGV.shift
 
-if number.nil? || number !~ /\d{9,10}/ || providers[provider].nil?
-	puts "Usage: #{$PROGRAM_NAME} <provider> <phone number>"
-	puts "Providers are #{providers.keys.join(', ')}."
-	exit 1
+if number.nil? || number !~ /\d{9,10}/
+	abort("Usage: #{$PROGRAM_NAME} <phone number>")
 end
 
 Mail.defaults do
@@ -64,10 +62,17 @@ end
 
 message = STDIN.read
 
-address = providers[provider] % { number: number }
+addresses = providers.map { |p| p % { number: number } }
+threads = []
 
-Mail.new do
-	from conf["email"]
-	to address
-	body message
-end.deliver!
+addresses.each do |address|
+	threads << Thread.new do
+		Mail.new do
+			from conf["email"]
+			to address
+			body message
+		end.deliver!
+	end
+end
+
+threads.each(&:join)
