@@ -1,0 +1,9 @@
+---
+
+# edit this file and save it as ~/.smsrc
+# if you don't know what a field means, don't change it
+
+email: foo@quux.net
+password: bar
+smtp: smtp.baz.com
+auth: plain
