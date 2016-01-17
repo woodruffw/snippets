@@ -34,20 +34,20 @@ opts = {
 # prefer mms where available
 providers = {
 	"usc" => "%{number}@email.uscc.net",
-    "alltel" => "%{number}@message.alltel.com",
-    "ting" => "%{number}@message.ting.com",
-    "spring" => "%{number}@messaging.sprintpcs.com",
-    "cellone" => "%{number}@mobile.celloneusa.com",
-    "telus" => "%{number}@msg.telus.com",
-    "acs" => "%{number}@paging.acswireless.com",
-    "rogers" => "%{number}@pcs.rogers.com",
-    "qwest" => "%{number}@qwestmp.com",
-    "tmobile" => "%{number}@tmomail.net",
-    "att" => "%{number}@mms.att.net",
-    "verizon" => "%{number}@vzwpix.com",
-    "republic" => "%{number}@text.republicwireless.com",
-    "cricket" => "%{number}@mms.cricketwireless.net",
-    "virgin" => "%{number}@vmobl.com"
+	"alltel" => "%{number}@message.alltel.com",
+	"ting" => "%{number}@message.ting.com",
+	"spring" => "%{number}@messaging.sprintpcs.com",
+	"cellone" => "%{number}@mobile.celloneusa.com",
+	"telus" => "%{number}@msg.telus.com",
+	"acs" => "%{number}@paging.acswireless.com",
+	"rogers" => "%{number}@pcs.rogers.com",
+	"qwest" => "%{number}@qwestmp.com",
+	"tmobile" => "%{number}@tmomail.net",
+	"att" => "%{number}@mms.att.net",
+	"verizon" => "%{number}@vzwpix.com",
+	"republic" => "%{number}@text.republicwireless.com",
+	"cricket" => "%{number}@mms.cricketwireless.net",
+	"virgin" => "%{number}@vmobl.com"
 }
 
 provider, number = ARGV.shift(2)
