@@ -56,6 +56,8 @@ if number.nil? || number !~ /\d{9,10}/
 	abort("Usage: #{$PROGRAM_NAME} <phone number>")
 end
 
+Mail.eager_autoload!
+
 Mail.defaults do
 	delivery_method :smtp, opts
 end
