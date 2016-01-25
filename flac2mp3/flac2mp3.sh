@@ -15,7 +15,7 @@ function usage() {
 	printf "\t-d - delete flac files after conversion\n"
 	printf "\t-v - be verbose\n"
 	printf "\t-h - print this usage information\n"
-	printf "\t-j X - Number of jobs to use"
+	printf "\t-j X - Number of jobs to use\n"
 	exit 1
 }
 
