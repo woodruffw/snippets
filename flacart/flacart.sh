@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-#   mp3art.sh
+#   flacart.sh
 #   Author: William Woodruff
 #   ------------------------
-#   Adds album artwork to MP3 files in bulk.
-#   Requires ffmpeg or avconv and GNU bash 4.0.
+#   Adds album artwork to FLAC files in bulk.
+#   Requires metaflac and GNU bash 4.0.
 #   ------------------------
 #   This code is licensed by William Woodruff under the MIT License.
 #   http://opensource.org/licenses/MIT
@@ -43,17 +43,14 @@ function find_artfile() {
 	done
 }
 
-function mp3art() {
-	local mp3_file="${1}"
+function flacart() {
+	local flac_file="${1}"
 
-	verbose "Beginning '${mp3_file}."
+	verbose "Beginning '${flac_file}."
 
-	"${conv}" -i "${mp3_file}" -i "${artfile}" -map 0:0 -map 1:0 -c copy \
-		-id3v2_version 3 -metadata:s:v title="Album cover" -metadata:s:v \
-		comment="Cover (Front)" "${mp3_file}.out.mp3" &>/dev/null
-	mv -f "${mp3_file}.out.mp3" "${mp3_file}"
+	metaflac --import-picture-from="${artfile}" "${flac_file}"
 
-	verbose "Completed '${mp3_file}'."
+	verbose "Completed '${flac_file}'."
 }
 
 [[ "${BASH_VERSINFO[0]}" -lt 4 ]] && error "GNU bash 4.0 or later is required"
@@ -61,13 +58,7 @@ function mp3art() {
 shopt -s nullglob
 shopt -s globstar
 
-if installed ffmpeg; then
-	conv=ffmpeg
-elif installed avconv; then
-	conv=avconv
-else
-	error "Could not find either ffmpeg or avconv to encode with"
-fi
+installed metaflac || error "Could not find metaflac to encode with"
 
 while getopts ":f:svhj:" opt; do
 	case "${opt}" in
@@ -100,32 +91,32 @@ if [[ -z "${artfile}" ]]; then
 	fi
 fi
 
-mp3s=("${dir}"/**/*.mp3)
+flacs=("${dir}"/**/*.flac)
 
 if [[ "${sequential}" ]]; then
 	verbose "Encoding sequentially."
 
-	for file in "${mp3s[@]}"; do
-		mp3art "${file}"
+	for file in "${flacs[@]}"; do
+		flacart "${file}"
 	done
 else
 	verbose "Encoding in parallel."
 	if installed "parallel"; then
-		export -f mp3art verbose
+		export -f flacart verbose
 		export conv
 		export artfile
 		if [[ -z "${njobs}" ]]; then
-			printf '%s\n' "${mp3s[@]}" | parallel -j+0 -q mp3art
+			printf '%s\n' "${flacs[@]}" | parallel -j+0 -q flacart
 		else
-			printf '%s\n' "${mp3s[@]}" | parallel -j"${njobs}" -q mp3art
+			printf '%s\n' "${flacs[@]}" | parallel -j"${njobs}" -q flacart
 		fi
 	else
 		verbose "'parallel' is not installed, falling back to forking. Job control will NOT work in this mode."
-		for file in "${mp3s[@]}"; do
-			mp3art "${file}" &
+		for file in "${flacs[@]}"; do
+			flacart "${file}" &
 		done
 		wait
 	fi
 fi
 
-verbose "All done. ${#mp3s[@]} files encoded with artwork."
+verbose "All done. ${#flacs[@]} files encoded with artwork."
