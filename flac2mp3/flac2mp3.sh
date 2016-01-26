@@ -3,14 +3,14 @@
 #	flac2mp3.sh
 #	Author: William Woodruff
 #	------------------------
-#	Converts flac files into mp3s in bulk.
+#	Converts FLAC files into MP3s in bulk.
 #	Requires ffmpeg or avconv and GNU bash 4.0.
 #	------------------------
 #	This code is licensed by William Woodruff under the MIT License.
 #	http://opensource.org/licenses/MIT
 
 function usage() {
-	printf "Usage: $(basename ${0}) [-sdvh] [directory]\n"
+	printf "Usage: $(basename ${0}) [-sdvh] [-j jobs] [directory]\n"
 	printf "\t-s - convert files sequentially instead of spawning processes\n"
 	printf "\t-d - delete flac files after conversion\n"
 	printf "\t-v - be verbose\n"
