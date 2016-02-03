@@ -11,7 +11,7 @@
 
 function usage() {
 	printf "Usage: $(basename ${0}) [-svh] [-f artfile] [-j jobs] [directory]\n"
-	printf "\t-f <file> - Use <file> as artwork instead of looking for \n"
+	printf "\t-f <file> - Use <file> as artwork instead of looking for common artwork files\n"
 	printf "\t-s - convert files sequentially instead of spawning processes\n"
 	printf "\t-v - be verbose\n"
 	printf "\t-h - print this usage information\n"
