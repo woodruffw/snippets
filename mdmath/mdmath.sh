@@ -46,8 +46,7 @@ slugs=( )
 for i in "${!matches[@]}"; do
 	sha=$(echo ${matches[i]} | shasum)
 	slugs[${i}]="${sha:0:6}"
-	curl -sG 'http://latex.codecogs.com/gif.latex' --data-urlencode "${matches[i]}" > "${slugs[i]}.gif"
-	convert "${slugs[i]}.gif" "${slugs[i]}.png"
+	curl -sG 'http://latex.codecogs.com/gif.latex' --data-urlencode "${matches[i]}" | convert - "${slugs[i]}.png"
 
 	matches[${i}]=$(printf '%s\n' "${matches[i]}" | sed -e 's/\\/\\\\/g' | sed -e 's/\^/\\\^/g')
 	if [[ -z "${output}" ]]; then
