@@ -68,7 +68,7 @@ while getopts ":sdvj:" opt; do
 		d ) delete=1 ;;
 		v ) verbose=1 ;;
 		j ) njobs=${OPTARG} ;;
-		* )	usage ;;
+		* ) usage ;;
 	esac
 done
 
