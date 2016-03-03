@@ -62,7 +62,7 @@ else
 	error "Could not find either ffmpeg or avconv to convert with"
 fi
 
-while getopts ":sdvj:" opt; do
+while getopts ":sdvhj:" opt; do
 	case "${opt}" in
 		s ) sequential=1 ;;
 		d ) delete=1 ;;
