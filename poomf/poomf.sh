@@ -32,7 +32,7 @@ function installed() {
 }
 
 function check_dependencies() {
-	local deps=(notify-send zenity xclip curl jq)
+	local deps=(notify-send zenity xclip curl jq exiftool)
 
 	for dep in "${deps[@]}"; do
 		if ! installed "${dep}" ; then
@@ -55,7 +55,7 @@ function fullscreen_screenshot()
 		exit 255
 	fi
 
-	eval "$cmd"
+	eval "${cmd}"
 }
 
 function selection_screenshot()
@@ -71,7 +71,7 @@ function selection_screenshot()
 		exit 255
 	fi
 
-	eval "$cmd"
+	eval "${cmd}"
 }
 
 [[ -f ~/.api-keys/srht-api ]] && source ~/.api-keys/srht-api
@@ -91,33 +91,35 @@ while getopts ifhsu: option; do
 	esac
 done
 
-if [[ ${interactive} ]]; then
+if [[ "${interactive}" ]]; then
 	file=$(zenity --file-selection)
 fi
 
 # take fullscreen picture
-if [[ ${fullscreen} ]]; then
-	file=$(filename=~/Dropbox/screenshots/$(date +%s).png ; fullscreen_screenshot ${filename} ; printf ${filename})
+if [[ "${fullscreen}" ]]; then
+	file=$(filename=~/Dropbox/screenshots/$(date +%s).png ; fullscreen_screenshot "${filename}" ; printf "${filename}")
 fi
 
 # take selection picture
-if [[ ${selection} ]]; then
-	file=$(filename=~/Dropbox/screenshots/$(date +%s).png ; selection_screenshot ${filename} ; printf ${filename})
+if [[ "${selection}" ]]; then
+	file=$(filename=~/Dropbox/screenshots/$(date +%s).png ; selection_screenshot "${filename}" ; printf "${filename}")
 fi
 
-if [[ -n ${file} ]]; then
-	if [[ -n ${SRHT_API_KEY} ]]; then
-		output=$(curl -sf -F key=${SRHT_API_KEY} -F file="@${file}" "https://sr.ht/api/upload")
+if [[ -n "${file}" ]]; then
+	exiftool -overwrite_original -all= "${file}" > /dev/null
 
-		if [[ -n ${output} ]]; then
-			url=$(echo ${output} | jq -M -r ".url")
+	if [[ -n "${SRHT_API_KEY}" ]]; then
+		output=$(curl -sf -F key="${SRHT_API_KEY}" -F file="@${file}" "https://sr.ht/api/upload")
+
+		if [[ -n "${output}" ]]; then
+			url=$(echo "${output}" | jq -M -r ".url")
 			success=1
 		fi
 	else
 		output=$(curl -sf -F file="@${file}" "https://api.teknik.io/upload/post")
 
 		if [[ -n ${output} ]]; then
-			url=$(echo ${output} | jq -M -r ".[0].results.file.url")
+			url=$(echo "${output}" | jq -M -r ".[0].results.file.url")
 			success=1
 		fi
 	fi
@@ -125,10 +127,10 @@ fi
 
 if [[ ${success} ]]; then
 	# copy link to clipboard
-	printf ${url} | xclip -selection primary
-	printf ${url} | xclip -selection clipboard
+	printf "${url}" | xclip -selection primary
+	printf "${url}" | xclip -selection clipboard
 	# notify user of completion
-	info "pomf!" "$url"
+	info "pomf!" "${url}"
 else
 	info "%s\n" "file was not uploaded, did you specify a valid filename?"
 fi
