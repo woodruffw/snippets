@@ -10,6 +10,7 @@
 #   http://opensource.org/licenses/MIT
 
 player="mpv"
+playeropts="--force-window=no"
 cmd="${1:-usage}"
 
 function error() {
@@ -44,7 +45,7 @@ installed "${player}" || error "Missing dependency: '${player}'"
 declare -A stations
 source ~/.radiorc
 
-[[ -z "${stations}" ]] || error "Missing stations hash in ~/.radiorc"
+[[ -z "${stations}" ]] || error "Missing radio stations in ~/.radiorc"
 
 if [[ "${cmd}" = "usage" ]]; then
 	usage
@@ -58,6 +59,6 @@ else
 		list_stations
 		exit 1
 	else
-		eval "${player} ${station}"
+		eval "${player} ${playeropts} ${station}"
 	fi
 fi
