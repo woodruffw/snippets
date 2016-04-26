@@ -49,6 +49,8 @@ stations=( ["wmuc"]="http://wmuc.umd.edu/wmuc-high.m3u"
 
 if [[ "${cmd}" = "usage" ]]; then
 	usage
+elif [[ "${cmd}" = "list" ]]; then
+	list_stations
 else
 	station="${stations["${cmd}"]}"
 
