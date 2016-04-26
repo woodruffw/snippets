@@ -3,7 +3,7 @@
 #   radio.sh
 #   Author: William Woodruff
 #   ------------------------
-#   Stream various radio stations.
+#   Stream various radio stations defined in ~/.radiorc.
 #   Requires mpv and GNU bash 4.0.
 #   ------------------------
 #   This code is licensed by William Woodruff under the MIT License.
@@ -37,15 +37,14 @@ function list_stations() {
 	done
 }
 
+[[ -f ~/.radiorc ]] || error "Missing ~/.radiorc"
 [[ "${BASH_VERSINFO[0]}" -lt 4 ]] && error "GNU bash 4.0 or later is required"
 installed "${player}" || error "Missing dependency: '${player}'"
 
 declare -A stations
-stations=( ["wmuc"]="http://wmuc.umd.edu/wmuc-high.m3u"
-		["wsum"]="http://stream.studio.wsum.wisc.edu/wsum128"
-		["wknc"]="http://wknc.sma.ncsu.edu:8000/wknchq.ogg.m3u"
-		["npr"]="http://npr.org/streams/mp3/nprlive24.m3u"
-	)
+source ~/.radiorc
+
+[[ -z "${stations}" ]] || error "Missing stations hash in ~/.radiorc"
 
 if [[ "${cmd}" = "usage" ]]; then
 	usage
