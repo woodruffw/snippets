@@ -1,0 +1,6 @@
+stations=( ["wmuc"]="http://wmuc.umd.edu/wmuc-high.m3u"
+		["wsum"]="http://stream.studio.wsum.wisc.edu/wsum128"
+		["wknc"]="http://wknc.sma.ncsu.edu:8000/wknchq.ogg.m3u"
+		["npr"]="http://npr.org/streams/mp3/nprlive24.m3u"
+		["wmbr"]="http://wmbr.org/WMBR_live_128.m3u"
+	)
