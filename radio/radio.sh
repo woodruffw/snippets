@@ -10,7 +10,7 @@
 #   http://opensource.org/licenses/MIT
 
 player="mpv"
-playeropts="--force-window=no"
+playeropts="--force-window=no --no-ytdl"
 cmd="${1:-usage}"
 
 function error() {
