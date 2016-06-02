@@ -46,7 +46,7 @@ act="add"
 
 case "${1}" in
 	"-b" ) act="remove" ;;
-	"-h"|* ) usage ;;
+	"-h" ) usage ;;
 esac
 
 wid=$(xwininfo -int | grep 'Window id' | awk '{ print $4 }')
