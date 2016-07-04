@@ -501,3 +501,15 @@ for entry in feed["entries"]:
 	# https://stackoverflow.com/questions/1732348/regex-match-open-tags-except-xhtml-self-contained-tags
 	link = re.search(r"(https?://[^\"]*)\">\[link\]", content).groups()[0]
 	player.command('loadfile', link, 'append-play')
+
+position = player.get_property('playlist-pos')
+playlist_size = player.get_property('playlist-count')
+
+# poll the playlist position every quarter of a second if still running
+while position != (playlist_size - 1):
+	try:
+		position = player.get_property('playlist-pos')
+		time.sleep(0.25)
+	except Exception:
+		player.close()
+		os._exit(0)
