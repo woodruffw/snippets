@@ -27,14 +27,17 @@ function installed() {
 }
 
 function pid2xid() {
-	# ew
-	gawk -F"\x00" '{
-		for (i = 1; i <= NF; i++) {
-			print $i
-		}
-	}' "/proc/${1}/environ" | grep WINDOWID | gawk -F= '{
-		print $2
-	}'
+	local xids=($(xwininfo -int -children -root | sed -e '1,6d' | awk '{ print $1 }'))
+	for xid in "${xids[@]}"; do
+		[[ "${xid}" != [0-9]* ]] && continue
+		local pid=$(xprop -id "${xid}" _NET_WM_PID | awk '{ print $3 }')
+		[[ "${pid}" != [0-9]* ]] && continue
+
+		if [[ "${pid}" -eq "${1}" ]]; then
+			printf "${xid}\n"
+			break
+		fi
+	done
 }
 
 installed gawk || fatal "Missing dependency: gawk (GNU awk)."
