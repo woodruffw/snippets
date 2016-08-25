@@ -14,7 +14,7 @@
 #include <ctype.h>
 
 #define BUFFERSIZE (4096)
-#define REJECT(c) ((c) < 32 || (c) > 126)
+#define REJECT(c) (((c) < 32 || (c) > 126) && ((c) != 10 || (c) != 13))
 
 void fstrings(FILE *file, size_t min_size);
 
@@ -31,7 +31,7 @@ int main(int argc, char const *argv[])
 	for (int i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "-n"))	{
 			if (i + 1 < argc) {
-				size = atol(argv[i++]);
+				size = atol(argv[++i]);
 
 				if (size < 1) {
 					fprintf(stderr, "%s: -n cannot less than 1\n", argv[0]);
