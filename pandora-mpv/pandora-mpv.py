@@ -11,12 +11,6 @@
 #	python-mpv is licensed by Lars Gustäbel under the MIT License.
 #	http://opensource.org/licenses/MIT
 
-try:
-	import pithos.pandora
-	import pithos.pandora.data
-except ImportError:
-	sys.exit('I need Pithos to connect to Pandora. Is Pithos installed?')
-
 import sys
 import os
 import time
@@ -27,6 +21,16 @@ import tempfile
 import threading
 import subprocess
 import inspect
+
+# site-packages wasn't in my module path. why?
+sys.path.append('/usr/lib/python3.5/site-packages')
+sys.path.append('/usr/lib/python3/site-packages')
+
+try:
+	import pithos.pandora
+	import pithos.pandora.data
+except ImportError:
+	sys.exit('I need Pithos to connect to Pandora. Is Pithos installed?')
 
 from queue import Queue, Empty
 
