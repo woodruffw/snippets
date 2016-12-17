@@ -13,7 +13,7 @@ use warnings;
 use Xchat qw(:all);
 
 my $PLUGIN_NAME = 'ezfmt';
-my $PLUGIN_VERS = '1.0';
+my $PLUGIN_VERS = '1.1';
 my $PLUGIN_DESC = 'basic text formatting';
 
 register($PLUGIN_NAME, $PLUGIN_VERS, $PLUGIN_DESC, \&on_unload);
@@ -23,7 +23,7 @@ sub on_unload {
 	Xchat::printf("%s version %s unloaded.", $PLUGIN_NAME, $PLUGIN_VERS);
 }
 
-hook_command('fmt', \&fmt, {help_text => "Usage: /fmt <text>"});
+hook_command('', \&fmt);
 
 sub fmt {
 	my %replace_map = (
@@ -32,7 +32,7 @@ sub fmt {
 		'+' => "\x02",
 	);
 
-	my $text = $_[1][1];
+	my $text = $_[1][0];
 	my $result = '';
 
 	if (defined $text) {
