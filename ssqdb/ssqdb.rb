@@ -166,7 +166,6 @@ quotes = quotes_string.split(/^--$/).map(&:strip).reject(&:empty?)
 
 abort("This file doesn't look like a quote DB.") if quotes.empty?
 
-# no attempt is made to escape anything besides < and >.
 quotes.map! do |quote|
   CGI.escapeHTML(quote)
 end
