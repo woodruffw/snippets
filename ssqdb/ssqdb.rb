@@ -53,9 +53,7 @@ HEADER = <<~EOS
       }
 
       .quote-text {
-        padding-left: 0.5em;
-        padding-right: 0.5em;
-        padding-bottom: 0.5em;
+        padding: 0 .5em .5em .5em;
       }
 
       .quote {
