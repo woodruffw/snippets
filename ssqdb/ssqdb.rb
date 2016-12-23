@@ -18,6 +18,9 @@
 
 require "erb"
 require "cgi"
+require "json"
+
+VERSION = 2
 
 HEADER = <<~EOS
 <html>
@@ -112,7 +115,7 @@ EOS
 INDEX_PAGE = <<~EOS
   #{HEADER}
 
-  <% quotes.each_with_index do |quote, index| %>
+  <% html_quotes.each_with_index do |quote, index| %>
     #{QUOTE}
   <% end %>
 
@@ -154,6 +157,33 @@ ABOUT_PAGE = <<~EOS
   #{FOOTER}
 EOS
 
+def help
+  puts <<~EOS
+    Usage: #{$PROGRAM_NAME} <quote file> [output directory] [options]
+    Options:
+      --json      Generate JSON files in addition to HTML
+      --help      Print this help message
+      --version   Print version information
+  EOS
+
+  exit 0
+end
+
+def version
+  puts "ssqdb version #{VERSION}."
+
+  exit 0
+end
+
+opts = {
+  json: !!ARGV.delete("--json"),
+  help: !!ARGV.delete("--help"),
+  version: !!ARGV.delete("--version"),
+}
+
+help if opts[:help]
+version if opts[:version]
+
 quotes_file = ARGV.shift || abort("I need a file to load quotes from.")
 output_dir = ARGV.shift || __dir__
 abort("That isn't a file.") unless File.file?(quotes_file)
@@ -164,7 +194,7 @@ quotes = quotes_string.split(/^--$/).map(&:strip).reject(&:empty?)
 
 abort("This file doesn't look like a quote DB.") if quotes.empty?
 
-quotes.map! do |quote|
+html_quotes = quotes.map do |quote|
   CGI.escapeHTML(quote)
 end
 
@@ -172,6 +202,15 @@ File.write(File.join(output_dir, "count"), quotes.size)
 File.write(File.join(output_dir, "index.html"), ERB.new(INDEX_PAGE).result(binding))
 File.write(File.join(output_dir, "about.html"), ERB.new(ABOUT_PAGE).result(binding))
 
-quotes.each_with_index do |quote, index|
-  File.write(File.join(output_dir, "quote#{index}.html"), ERB.new(QUOTE_PAGE).result(binding))
+html_quotes.each_with_index do |quote, index|
+  html_file = File.join(output_dir, "quote#{index}.html")
+  File.write(html_file, ERB.new(QUOTE_PAGE).result(binding))
+end
+
+if opts[:json]
+  quotes.each_with_index do |quote, index|
+    json_file = File.join(output_dir, "quote#{index}.json")
+    blob = { count: index, quote: quote }
+    File.write(json_file, blob.to_json)
+  end
 end
