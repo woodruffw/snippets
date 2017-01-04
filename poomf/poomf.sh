@@ -21,7 +21,7 @@ function usage() {
 }
 
 function info() {
-	notify-send --urgency=critical ${@}
+	notify-send ${@}
 }
 
 function installed() {
@@ -46,9 +46,11 @@ function fullscreen_screenshot()
 {
 	local cmd=
 
-	if [[ $(which gnome-screenshot 2> /dev/null) ]]; then
+	if installed maim ; then
+		cmd="maim ${1}"
+	elif installed gnome-screenshot ; then
 		cmd="gnome-screenshot -f ${1}"
-	elif [[ $(which scrot 2> /dev/null) ]]; then
+	elif installed scrot ; then
 		cmd="scrot ${1}"
 	else
 		info "Nothing to take a screenshot with."
@@ -62,9 +64,11 @@ function selection_screenshot()
 {
 	local cmd=
 
-	if [[ $(which gnome-screenshot 2> /dev/null) ]]; then
+	if installed maim ; then
+		cmd="maim -s ${1}"
+	elif installed gnome-screenshot ; then
 		cmd="gnome-screenshot -a -f ${1}"
-	elif [[ $(which scrot 2> /dev/null) ]]; then
+	elif installed scrot ; then
 		cmd="scrot -s ${1}"
 	else
 		info "Nothing to take a screenshot with."
