@@ -23,6 +23,7 @@ function fatal {
 
 [[ -n "${1}" ]] || fatal "Usage: $(basename ${0}) <format>"
 installed abcde || fatal "Missing abcde for ripping."
+installed glyrc || fatal "Missing glyrc for album art."
 
 format=$(echo ${1} | tr [:upper:] [:lower:])
 
@@ -32,4 +33,4 @@ case "${format}" in
 	* ) fatal "Unsupported format: ${format}. Maybe use abcde directly?"
 esac
 
-abcde -Vx -q high -a "cddb,read,encode,tag,move,playlist,clean" -o "${format}"
+abcde -Vx -G -a "cddb,read,encode,tag,move,playlist,clean" -o "${format}"
