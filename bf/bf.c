@@ -33,6 +33,7 @@ int main(int argc, char const *argv[])
 		char *op_buffer = malloc(EIGHT_KB);
 		if (op_buffer == NULL) {
 			fputs("allocation failed, exiting now", stderr);
+			exit(1);
 		}
 
 		while ((c = fgetc(bf_file)) != EOF)
