@@ -76,10 +76,14 @@ int main(int argc, char const *argv[])
         	    puts("note: unmatched brackets code will be purged by the compiler."
         	            "sorry, if that violates your freedom.");
 
-        	while (matches) {
-        	    if (matches < 0 && *--end == '}') {
+        	while (matches)
+            {
+        	    if (matches < 0 && *--end == '}')
+                {
         	            matches++;
-        	    } else if (*--end == '{') {
+        	    }
+                else if (*--end == '{')
+                {
         	            matches--;
         	            /* skip 'while (*sp) {' string; magicNumber 12 takes the
         	             * end pointer to 'w' of 'while' */
