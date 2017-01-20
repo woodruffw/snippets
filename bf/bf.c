@@ -38,7 +38,7 @@ int main(int argc, char const *argv[])
 
 		while ((c = fgetc(bf_file)) != EOF)
 		{
-			if (size+14 == maxsize)
+			if (size+14 >= maxsize)
 			{
 				maxsize *= 2;
 				op_buffer = realloc(op_buffer, maxsize);
