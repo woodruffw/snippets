@@ -28,15 +28,19 @@ int main(int argc, char const *argv[])
 		FILE *bf_file = fopen(argv[1], "r");
 		int unmatched_braces = 0;
 		char c;
+		size_t maxsize = EIGHT_KB;
 		size_t size = 0;
 		char *op_buffer = malloc(EIGHT_KB);
-		assert(op_buffer != NULL);
+		if (op_buffer == NULL) {
+			fputs("allocation failed, exiting now", stderr);
+		}
 
 		while ((c = fgetc(bf_file)) != EOF)
 		{
-			if (size+14 % EIGHT_KB == 0)
+			if (size+14 == maxsize)
 			{
-				op_buffer = realloc(op_buffer, size * 2);
+				maxsize *= 2;
+				op_buffer = realloc(op_buffer, maxsize);
 				if (op_buffer == NULL) {
 					fputs("buffer overflow exiting", stderr);
 					exit(1);
