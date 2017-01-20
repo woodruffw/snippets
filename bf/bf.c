@@ -11,7 +11,6 @@
 	http://opensource.org/licenses/MIT
 */
 
-#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,18 +26,21 @@ int main(int argc, char const *argv[])
 	else
 	{
 		FILE *bf_file = fopen(argv[1], "r");
-        	int matches = 0;
+		int unmatched_braces = 0;
 		char c;
-		size_t size = 1;
+		size_t size = 0;
 		char *op_buffer = malloc(EIGHT_KB);
 		assert(op_buffer != NULL);
 
 		while ((c = fgetc(bf_file)) != EOF)
 		{
-			if (size % EIGHT_KB)
+			if (size+14 % EIGHT_KB == 0)
 			{
 				op_buffer = realloc(op_buffer, size * 2);
-				assert(op_buffer != NULL);
+				if (op_buffer == NULL) {
+					fputs("buffer overflow exiting", stderr);
+					exit(1);
+				}
 			}
 
 			switch(c)
@@ -70,22 +72,22 @@ int main(int argc, char const *argv[])
 				case '[':
 					strncat(op_buffer, "while(*sp){", 11);
 					size += 11;
-					++matches;
+					++unmatched_braces;
 					break;
 				case ']':
 					strncat(op_buffer, "}", 1);
 					size += 1;
-					--matches;
+					--unmatched_braces;
 					break;
 				default:
 					break;
 			}
 		}
 
-		if (matches)
+		if (unmatched_braces)
 		{
 			fprintf(stderr, "Expected %s. Exiting",
-				matches < 0 ? "'[' before ']'": "']' after '['");
+				unmatched_braces < 0 ? "'[' before ']'": "']' after '['");
 			free(op_buffer);
 			exit(-1);
 		}
