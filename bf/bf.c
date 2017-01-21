@@ -43,7 +43,7 @@ int main(int argc, char const *argv[])
 				maxsize *= 2;
 				op_buffer = realloc(op_buffer, maxsize);
 				if (op_buffer == NULL) {
-					fputs("buffer overflow exiting", stderr);
+					fputs("Error: Buffer allocation failure, exiting", stderr);
 					exit(1);
 				}
 			}
@@ -91,7 +91,7 @@ int main(int argc, char const *argv[])
 
 		if (unmatched_braces)
 		{
-			fprintf(stderr, "Expected %s. Exiting",
+			fprintf(stderr, "Expected %s, Exiting",
 				unmatched_braces < 0 ? "'[' before ']'": "']' after '['");
 			free(op_buffer);
 			exit(-1);
