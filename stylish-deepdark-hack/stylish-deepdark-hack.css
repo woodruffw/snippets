@@ -1,13 +1,13 @@
 textarea {
-  background-color: #444;
-  color: #FFF;
+  background-color: #444 !important;
+  color: #FFF !important;
 }
 
 input {
-  background-color: #444;
-  color: #FFF;
+  background-color: #444 !important;
+  color: #FFF !important;
 }
 
 #urlbar {
-  background-color: #444;
+  background-color: #444 !important;
 }
