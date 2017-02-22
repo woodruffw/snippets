@@ -5,12 +5,12 @@
 # ------------------------
 # A tiny static quote DB, inspired by QDB.
 # ssqdb expects the following quote file format:
-#  --
+#  %
 #  <person1> witty comment
 #  <person2> witty response
-#  --
+#  %
 #  <person3> less witty comment
-#  --
+#  %
 #  (etc)
 # ------------------------
 # This code is licensed by William Woodruff under the MIT License.
@@ -72,7 +72,7 @@ HEADER = <<~EOS
     </style>
     <script type="text/javascript">
       function makeUrl(count) {
-        var num = Math.floor(Math.random() * count) + 1;
+        var num = Math.floor(Math.random() * count);
         window.location = "quote" + num + ".html";
       }
 
@@ -190,7 +190,7 @@ abort("That isn't a file.") unless File.file?(quotes_file)
 abort("Output directory doesn't exist.") unless Dir.exist?(output_dir)
 
 quotes_string = File.read(quotes_file)
-quotes = quotes_string.split(/^--$/).map(&:strip).reject(&:empty?)
+quotes = quotes_string.split(/^%$/).map(&:strip).reject(&:empty?)
 
 abort("This file doesn't look like a quote DB.") if quotes.empty?
 
