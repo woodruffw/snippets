@@ -12,6 +12,7 @@
 function usage() {
 	printf "%s <option>\n" $(basename ${0})
 	printf "%s\n" "Options:"
+	printf "%s\t\t\t%s\n" "-e" "don't strip exif data"
 	printf "%s\t\t\t%s\n" "-i" "interactive (zenity)"
 	printf "%s\t\t\t%s\n" "-f" "fullscreen screenshot"
 	printf "%s\t\t\t%s\n" "-h" "show this message"
@@ -83,8 +84,9 @@ function selection_screenshot()
 check_dependencies
 
 # get options
-while getopts ifhsu: option; do
+while getopts eifhsu: option; do
 	case "${option}" in
+		e)	keepexif=1 ;;
 		i)	interactive=1 ;;
 		f)	fullscreen=1 ;;
 		h)	usage ;;
@@ -110,7 +112,9 @@ if [[ "${selection}" ]]; then
 fi
 
 if [[ -n "${file}" ]]; then
-	exiftool -overwrite_original -all= "${file}" > /dev/null
+	if [[ ! "${keepexif}" ]]; then
+		exiftool -overwrite_original -all= "${file}" > /dev/null
+	fi
 
 	if [[ -n "${SRHT_API_KEY}" ]]; then
 		output=$(curl -sf -F key="${SRHT_API_KEY}" -F file="@${file}" "https://sr.ht/api/upload")
