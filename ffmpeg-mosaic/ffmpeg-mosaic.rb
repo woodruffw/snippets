@@ -54,7 +54,7 @@ input_mosaic.each_with_index do |row, i|
 end
 
 tmp = "tmp0"
-filter << "[base][a0] overlay=shortest=0 [#{tmp}];\n"
+filter << "[base][a0] overlay=shortest=1 [#{tmp}];\n"
 
 input_mosaic.each_with_index do |row, i|
   row.each_with_index do |col, j|
@@ -64,9 +64,9 @@ input_mosaic.each_with_index do |row, i|
     xy = ":x=#{pane_width * j}:y=#{pane_height * i}"
 
     if idx != inputs.size - 1
-      filter << "[#{tmp}][a#{idx}] overlay=shortest=0#{xy} [#{tmp_next}];\n"
+      filter << "[#{tmp}][a#{idx}] overlay=shortest=1#{xy} [#{tmp_next}];\n"
     else # last input has special syntax
-      filter << "[#{tmp}][a#{idx}] overlay=shortest=0#{xy}"
+      filter << "[#{tmp}][a#{idx}] overlay=shortest=1#{xy}"
     end
 
     tmp = tmp_next
