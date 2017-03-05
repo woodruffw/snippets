@@ -10,6 +10,7 @@
 # http://opensource.org/licenses/MIT
 
 throttle = !!ARGV.delete("--throttle")
+shortest = !!ARGV.delete("--shortest") ? 1 : 0
 
 width, height = ARGV.shift&.split("x", 2).map(&:to_i)
 
@@ -54,7 +55,7 @@ input_mosaic.each_with_index do |row, i|
 end
 
 tmp = "tmp0"
-filter << "[base][a0] overlay=shortest=1 [#{tmp}];\n"
+filter << "[base][a0] overlay=shortest=#{shortest} [#{tmp}];\n"
 
 input_mosaic.each_with_index do |row, i|
   row.each_with_index do |col, j|
@@ -64,9 +65,9 @@ input_mosaic.each_with_index do |row, i|
     xy = ":x=#{pane_width * j}:y=#{pane_height * i}"
 
     if idx != inputs.size - 1
-      filter << "[#{tmp}][a#{idx}] overlay=shortest=1#{xy} [#{tmp_next}];\n"
+      filter << "[#{tmp}][a#{idx}] overlay=shortest=#{shortest}#{xy} [#{tmp_next}];\n"
     else # last input has special syntax
-      filter << "[#{tmp}][a#{idx}] overlay=shortest=1#{xy}"
+      filter << "[#{tmp}][a#{idx}] overlay=shortest=#{shortest}#{xy}"
     end
 
     tmp = tmp_next
