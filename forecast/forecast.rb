@@ -20,9 +20,12 @@ KEY = ENV["WUNDERGROUND_API_KEY"]
 abort("I need a $WUNDERGROUND_API_KEY in your environment.") unless KEY
 
 wunder = Wunderground.new(KEY)
+query = ARGV.join(" ")
+
+abort("I need a weather query.") if query.empty?
 
 begin
-  forecast = wunder.forecast_for(ARGV.join(" "))["forecast"]
+  forecast = wunder.forecast_for(query)["forecast"]
 
   # even period numbers are day forecasts, odds are night forecasts
   days = forecast["txt_forecast"]["forecastday"].select { |w| w["period"].even? }
