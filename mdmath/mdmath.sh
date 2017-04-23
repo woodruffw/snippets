@@ -11,18 +11,18 @@
 #	This code is licensed by William Woodruff under the MIT License.
 #	http://opensource.org/licenses/MIT
 
-function usage() {
-	printf "Usage: $(basename ${0}) [-h] <file>\n"
+usage() {
+	echo "Usage: shellcheck [-h] <file>"
 	exit 1
 }
 
-function error() {
-	>&2 printf "Fatal: ${@}. Exiting.\n"
+error() {
+	>&2 echo "Fatal: ${*}. Exiting."
 	exit 2
 }
 
-function installed() {
-	local cmd=$(command -v "${1}")
+installed() {
+	cmd=$(command -v "${1}")
 
 	[[ -n  "${cmd}" ]] && [[ -f "${cmd}" ]]
 	return ${?}
@@ -43,15 +43,17 @@ unset IFS
 slugs=( )
 
 for i in "${!matches[@]}"; do
-	sha=$(echo ${matches[i]} | shasum)
+	sha=$(echo "${matches[i]}" | shasum)
 	slugs[${i}]="${sha:0:6}"
+	echo "???"
 	curl -sG 'http://latex.codecogs.com/png.latex' --data-urlencode "${matches[i]}" > "${slugs[i]}.png"
+	echo "???"
 
 	matches[${i}]=$(printf '%s\n' "${matches[i]}" | sed -e 's/\\/\\\\/g' | sed -e 's/\^/\\\^/g')
 	if [[ -z "${output}" ]]; then
 		output=$(sed 's,@@'"${matches[i]}"'@@,![](./'"${slugs[i]}.png"'),' "${1}")
 	else
-		output=$(printf "${output}" | sed 's,@@'"${matches[i]}"'@@,![](./'"${slugs[i]}.png"'),')
+		output=$(sed 's,@@'"${matches[i]}"'@@,![](./'"${slugs[i]}.png"'),' <<< "${output}")
 	fi
 done
 
