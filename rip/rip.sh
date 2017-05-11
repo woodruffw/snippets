@@ -10,22 +10,22 @@
 #   http://opensource.org/licenses/MIT
 
 function installed() {
-	local cmd=$(command -v "${1}")
+	cmd=$(command -v "${1}")
 
 	[[ -n  "${cmd}" ]] && [[ -f "${cmd}" ]]
 	return ${?}
 }
 
 function fatal {
-	>&2 printf "Fatal: ${*}\n"
+	>&2 echo "Fatal: ${*}"
 	exit 2
 }
 
-[[ -n "${1}" ]] || fatal "Usage: $(basename ${0}) <format>"
+[[ -n "${1}" ]] || fatal "Usage: $(basename "${0}") <format>"
 installed abcde || fatal "Missing abcde for ripping."
 installed glyrc || fatal "Missing glyrc for album art."
 
-format=$(echo ${1} | tr [:upper:] [:lower:])
+format=$(echo "${1}" | tr "[:upper:]" "[:lower:]")
 
 case "${format}" in
 	"mp3" ) installed lame || fatal "Missing lame for MP3 encoding." ;;
