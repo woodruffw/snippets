@@ -144,12 +144,12 @@ ABOUT_PAGE = <<~EOS
   <p>
     "quotes.txt" should be formatted as follows:
     <pre>
-      --
+      %
       &lt;person1&gt; witty comment
       &lt;person2&gt; witty response
-      --
+      %
       &lt;person3&gt; less witty comment
-      --
+      %
       (etc)
     </pre>
   </p>
