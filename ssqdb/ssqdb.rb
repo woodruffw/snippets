@@ -20,7 +20,7 @@ require "erb"
 require "cgi"
 require "json"
 
-VERSION = 2
+VERSION = 3
 
 HEADER = <<~EOS
 <html>
@@ -42,6 +42,7 @@ HEADER = <<~EOS
       }
 
       pre {
+        overflow: auto;
         white-space: pre-wrap;
       }
 
