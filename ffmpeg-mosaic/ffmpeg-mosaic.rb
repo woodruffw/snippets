@@ -12,17 +12,15 @@
 throttle = !!ARGV.delete("--throttle")
 shortest = !!ARGV.delete("--shortest") ? 1 : 0
 
-width, height = ARGV.shift&.split("x", 2).map(&:to_i)
+width, height = ARGV.shift&.split("x", 2)&.map(&:to_i)
 
-rows, columns = ARGV.shift&.split("x", 2).map(&:to_i)
+rows, columns = ARGV.shift&.split("x", 2)&.map(&:to_i)
 
 output = ARGV.shift
 
 inputs = ARGV
 
-if rows * columns < inputs.size
-  abort "Please add another row or column."
-end
+abort("Please add another row or column.") if rows * columns < inputs.size
 
 unless !inputs.empty? && inputs.all? { |i| File.file?(i) }
   abort "One or more invalid inputs."
@@ -34,8 +32,8 @@ pane_dim = "#{pane_width}x#{pane_height}"
 
 args = ["ffmpeg"]
 
-inputs.each_with_index do |input, idx|
-  args.concat ["-i", input] # "-threads:#{idx}", "1"]
+inputs.each_with_index do |input, _idx|
+  args.concat ["-i", input] # "-threads:#{_idx}", "1"]
 end
 
 args.concat ["-threads", "1"] if throttle
@@ -48,7 +46,7 @@ filter = ""
 filter << "nullsrc=size=#{width}x#{height} [base];\n"
 
 input_mosaic.each_with_index do |row, i|
-  row.each_with_index do |col, j|
+  row.each_with_index do |_col, j|
     idx = (i * columns) + j
     filter << "[#{idx}:v] setpts=PTS-STARTPTS, scale=#{pane_dim} [a#{idx}];\n"
   end
@@ -58,7 +56,7 @@ tmp = "tmp0"
 filter << "[base][a0] overlay=shortest=#{shortest} [#{tmp}];\n"
 
 input_mosaic.each_with_index do |row, i|
-  row.each_with_index do |col, j|
+  row.each_with_index do |_col, j|
     next if i.zero? && j.zero? # this one comes for free, see above
     idx = (i * columns) + j
     tmp_next = "tmp#{idx}"
@@ -77,4 +75,4 @@ end
 # -an disables audio output, since it doesn't make much sense here
 args.concat [filter, "-an", output]
 
-exec *args
+exec(*args)

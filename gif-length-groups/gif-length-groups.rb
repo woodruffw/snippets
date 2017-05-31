@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require "slop"
 
@@ -22,7 +23,7 @@ def self.installed?(util)
   end
 end
 
-EXTERNAL_DEPS = ["exiftool", "gifsicle"]
+EXTERNAL_DEPS = %w[exiftool gifsicle].freeze
 
 EXTERNAL_DEPS.each do |dep|
   abort "Missing dependency: '#{dep}'." unless installed? dep
@@ -91,13 +92,13 @@ opts[:num_groups].times do |g|
   puts "Group #{g} duration: #{group_duration}" unless opts.quiet?
 end
 
-puts "Rendering grouped inputs..." unless opts.quiet?
+puts "Rendering grouped GIFs..." unless opts.quiet?
 
 Dir.mkdir opts[:directory] unless Dir.exist? opts[:directory]
 
-groups.each_with_index do |inputs, i|
+groups.each_with_index do |gifs, i|
   filename = File.join(opts[:directory], "group#{i}.gif")
-  `gifsicle -w --colors 256 #{inputs.join(" ")} > #{filename}`
+  `gifsicle -w --colors 256 #{gifs.join(" ")} > #{filename}`
 
   puts "Rendered group #{i} as #{filename}..." unless opts.quiet?
 end

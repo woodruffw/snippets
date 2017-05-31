@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require "slop"
 
@@ -35,16 +36,15 @@ opts = Slop.parse do |o|
   end
 end
 
-input = opts.args.shift || abort("I need a file to dump.")
-output = "#{input}.vm"
-source = File.read(input)
-
+input        = opts.args.shift || abort("I need a file to dump.")
+output       = "#{input}.vm"
+source       = File.read(input)
 instructions = RubyVM::InstructionSequence.new source
 
-if opts.marshal?
-  contents = Marshal.dump(instructions.to_a)
-else
-  contents = instructions.disasm
-end
+contents = if opts.marshal?
+             Marshal.dump(instructions.to_a)
+           else
+             instructions.disasm
+           end
 
 File.write(output, contents)

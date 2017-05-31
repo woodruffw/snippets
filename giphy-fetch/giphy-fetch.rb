@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # giphy-fetch.rb
 # Author: William Woodruff
@@ -17,7 +18,7 @@ VERSION = 1
 
 # fall back to public beta key, see https://github.com/Giphy/GiphyAPI
 KEY = ENV["GIPHY_API_KEY"] || "dc6zaTOxFJmzC"
-URL = "http://api.giphy.com/v1/gifs/search?q=%{query}&api_key=%{key}&limit=100"
+URL = "http://api.giphy.com/v1/gifs/search?q=%<query>s&api_key=%<key>s&limit=100"
 
 opts = Slop.parse do |o|
   o.banner = <<~EOS
@@ -64,6 +65,5 @@ begin
     end
   end
 rescue => e
-  raise e
-  abort("Something exploded during GIF retrieval.")
+  abort "Something exploded during GIF retrieval: #{e}."
 end
