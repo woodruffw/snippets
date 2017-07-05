@@ -76,6 +76,6 @@ loop do
     w.puts message
     w.close
     r.close
-    pid.wait
+    Process.wait pid
   end
 end
