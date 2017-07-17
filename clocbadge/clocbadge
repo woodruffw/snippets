@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# clocbadge: Turn a cloc(1) linecount into a pretty badge using shields.io.
+# Usage: clocbadge [options] <FILE|DIR> ...
+# All options and files/directories are passed into cloc(1) directly.
+
+die() {
+    echo "Error: $*" >&2
+    exit 1
+}
+
+ensure_installed() {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" && -f "${cmd}" ]] || die "'$1' not installed. Aborting."
+}
+
+ensure_installed cloc
+
+# format (we want E, the total lines of code):
+# SUM: A B C D E
+loc="$(cloc "${@}" | tail -2 | head -1 | awk '{ print $5 }')"
+
+if [[ "${loc}" -ge 1000 ]]; then
+    loc="$(bc <<< "scale=2; ${loc}/1000")K"
+fi
+
+echo "https://img.shields.io/badge/LOC-${loc}-blue.svg"
