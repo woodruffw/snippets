@@ -21,13 +21,13 @@ require "erb"
 require "cgi"
 require "json"
 
-VERSION = 4
+VERSION = 5
 
 HEADER = <<~EOS
   <html>
     <head>
       <meta charset="UTF-8">
-      <title>ssqdb <%= " - quote \\#\#{index}" if defined? index %></title>
+      <title><%= title %> <%= " - quote \\#\#{index}" if defined? index %></title>
       <style type="text/css">
         body {
           background-color: #F6F6F6;
@@ -165,7 +165,7 @@ EOS
 
 def help
   puts <<~EOS
-    Usage: #{$PROGRAM_NAME} <quote file> [output directory] [options]
+    Usage: #{$PROGRAM_NAME} <quote file> [output directory] [title] [options]
     Options:
       --json      Generate JSON files in addition to HTML
       --help      Print this help message
@@ -187,16 +187,18 @@ opts = {
   version: !!ARGV.delete("--version"),
 }
 
-help if opts[:help]
+help    if opts[:help]
 version if opts[:version]
 
 quotes_file = ARGV.shift || abort("I need a file to load quotes from.")
-output_dir = ARGV.shift || __dir__
-abort("That isn't a file.") unless File.file?(quotes_file)
+output_dir  = ARGV.shift || __dir__
+title       = CGI.escapeHTML(ARGV.shift || "ssqdb")
+
+abort("That isn't a file.")              unless File.file?(quotes_file)
 abort("Output directory doesn't exist.") unless Dir.exist?(output_dir)
 
 quotes_string = File.read(quotes_file)
-quotes = quotes_string.split(/^%$/).map(&:strip).reject(&:empty?).uniq
+quotes        = quotes_string.split(/^%$/).map(&:strip).reject(&:empty?).uniq
 
 abort("This file doesn't look like a quote DB.") if quotes.empty?
 
@@ -217,7 +219,8 @@ end
 if opts[:json]
   quotes.each_with_index do |quote, index|
     json_file = File.join(output_dir, "quote#{index}.json")
-    blob = { count: index, quote: quote }
+    blob      = { count: index, quote: quote }
+
     File.write(json_file, blob.to_json)
   end
 end
