@@ -1,0 +1,24 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# hexchat-emoji-replace: Generate a replace.conf-compatible list of
+# short name -> emoji codepoint replacements.
+# Usage: hexchat-emoji-replace >> ~/.config/hexchat/replace.conf
+
+require "json"
+require "open-uri"
+
+URL = "https://raw.githubusercontent.com/iamcal/emoji-data/master/emoji.json"
+
+emojis = JSON.parse(open(URL).read)
+
+emojis.each do |emoji|
+  codepoints = emoji["unified"].split("-").map { |cp| cp.to_i 16 }
+  short_name = emoji["short_name"].tr("-", "_")
+  emoji      = codepoints.pack "U*"
+
+  puts <<~EOS
+    NAME :#{short_name}:
+    CMD #{emoji}\n
+  EOS
+end
