@@ -4,17 +4,6 @@
 # git-gem-release-tag: Create a git tag for a Ruby namespace's version,
 #  build a new gem for that tag, and push that gem to Rubygems.
 
-def find_gemspec(namespace)
-  # __dir__ doesn't work because `git` doesn't cwd to the project for some reason
-  candidates = Dir[File.join(`pwd`.chomp, "*.gemspec")]
-
-  # if there's only one gemspec, assume it's correct
-  # return candidates.first if candidates.size == 1
-
-  # otherwise, take the first gemspec that matches the namespace
-  candidates.find { |c| c =~ Regexp.new(namespace, Regexp::IGNORECASE) }
-end
-
 def act(s)
   if ARGV.include? "--dry-run"
     puts s
@@ -23,24 +12,30 @@ def act(s)
   end
 end
 
-namespace = ARGV.shift || abort("Give me a namespace to check.")
-gemspec = find_gemspec namespace.downcase
+gemspec_candidates = Dir[File.join(`pwd`.chomp, "*.gemspec")]
 
-# any of these might have our version constant in them!
-glob = File.join(`pwd`.chomp, "lib", "*.rb")
-Dir[glob].each { |f| require_relative f }
+abort("No gemspec found.") if gemspec_candidates.empty?
+abort("You have more than one gemspec, giving up.") if gemspec_candidates.size > 1
+
+gemspec = gemspec_candidates.first
+
+act "gem build #{gemspec}"
+
+gemfile_candidates = Dir[File.join(`pwd`.chomp, "*.gem")]
+
+abort("No gemfile found, did `gem build` fail?") if gemfile_candidates.empty?
+abort("More than one gemfile found, try running with them removed.") if gemfile_candidates.size > 1
+
+gemfile = File.basename gemfile_candidates.first
+
+/-(?<version>[^-]+)\.gem$/ =~ gemfile
 
 tags = `git tag`.split
-version = Object.const_get(namespace)::VERSION
 
-abort("Did you forget to update #{namespace}::VERSION?") if tags.include?(version)
-abort("No gemspec candidate found.") unless File.file?(gemspec)
-
-specname = File.basename(gemspec, ".gemspec")
+abort("Did you forget to bump your version?") if tags.include?(version)
 
 # you'd better hope each of these steps works!
 act "git tag #{version}"
 act "git push origin #{version}"
-act "gem build #{gemspec}"
-act "gem push #{specname}-#{version}.gem"
-act "rm -f #{specname}-#{version}.gem"
+act "gem push #{gemfile}"
+act "rm -f #{gemfile}"
