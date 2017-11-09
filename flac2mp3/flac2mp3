@@ -10,39 +10,39 @@
 #	http://opensource.org/licenses/MIT
 
 function usage() {
-	printf "Usage: $(basename ${0}) [-sdvh] [-j jobs] [directory]\n"
-	printf "\t-s - convert files sequentially instead of spawning processes\n"
-	printf "\t-d - delete flac files after conversion\n"
-	printf "\t-v - be verbose\n"
-	printf "\t-h - print this usage information\n"
-	printf "\t-j X - Number of jobs to use\n"
+	echo -e "Usage: $(basename "${0}") [-sdvh] [-j jobs] [directory]"
+	echo -e "\t-s - convert files sequentially instead of spawning processes"
+	echo -e "\t-d - delete flac files after conversion"
+	echo -e "\t-v - be verbose"
+	echo -e "\t-h - print this usage information"
+	echo -e "\t-j X - Number of jobs to use"
 	exit 1
 }
 
 function verbose() {
 	if [[ "${verbose}" ]]; then
-		printf "${@}\n"
+		echo "${*}"
 	fi
 }
 
 function error() {
-	>&2 printf "Fatal: ${@}. Exiting.\n"
+	>&2 echo "Fatal: ${*}. Exiting."
 	exit 2
 }
 
 function installed() {
-	local cmd=$(command -v "${1}")
+	cmd=$(command -v "${1}")
 
 	[[ -n  "${cmd}" ]] && [[ -f "${cmd}" ]]
 	return ${?}
 }
 
 function flac2mp3() {
-	local flac_file="${1}"
-	local mp3_file="${flac_file%.flac}.mp3"
+	flac_file="${1}"
+	mp3_file="${flac_file%.flac}.mp3"
 
-	local flac_base=$(basename "${flac_file}")
-	local mp3_base=$(basename "${mp3_file}")
+	flac_base=$(basename "${flac_file}")
+	mp3_base=$(basename "${mp3_file}")
 
 	verbose "Beginning '${flac_base}' -> '${mp3_base}'."
 	"${conv}" -y -i "${flac_file}" -b:a 320k "${mp3_file}" &> /dev/null
@@ -62,13 +62,13 @@ else
 	error "Could not find either ffmpeg or avconv to convert with"
 fi
 
-while getopts ":sdvhj:" opt; do
+while getopts ":sdvj:" opt; do
 	case "${opt}" in
 		s ) sequential=1 ;;
 		d ) delete=1 ;;
 		v ) verbose=1 ;;
 		j ) njobs=${OPTARG} ;;
-		* ) usage ;;
+		* )	usage ;;
 	esac
 done
 
