@@ -10,26 +10,26 @@
 #   http://opensource.org/licenses/MIT
 
 function usage() {
-	printf "Usage: $(basename ${0}) [-svh] [-f artfile] [-j jobs] [directory]\n"
-	printf "\t-f <file> - Use <file> as artwork instead of looking for common artwork files\n"
-	printf "\t-s - convert files sequentially instead of spawning processes\n"
-	printf "\t-v - be verbose\n"
-	printf "\t-h - print this usage information\n"
-	printf "\t-j X - Number of jobs to use\n"
+	echo -e "Usage: $(basename "${0}") [-svh] [-f artfile] [-j jobs] [directory]"
+	echo -e "\t-f <file> - Use <file> as artwork instead of looking for common artwork files"
+	echo -e "\t-s - convert files sequentially instead of spawning processes"
+	echo -e "\t-v - be verbose"
+	echo -e "\t-h - print this usage information"
+	echo -e "\t-j X - Number of jobs to use"
 	exit 1
 }
 
 function verbose() {
-	[[ "${verbose}" ]] && printf "${@}\n"
+	[[ "${verbose}" ]] && echo "${*}"
 }
 
 function error() {
-	>&2 printf "Fatal: ${@}. Exiting.\n"
+	>&2 echo "Fatal: ${*}. Exiting."
 	exit 2
 }
 
 function installed() {
-	local cmd=$(command -v "${1}")
+	cmd=$(command -v "${1}")
 
 	[[ -n  "${cmd}" ]] && [[ -f "${cmd}" ]]
 	return ${?}
@@ -39,7 +39,7 @@ function find_artfile() {
 	local common_files=(cover.{jp{e,}g,png} folder.{jp{e,}g,png})
 
 	for file in "${common_files[@]}"; do
-		[[ -f "${dir}/${file}" ]] && { printf "${dir}/${file}" ; return ; }
+		[[ -f "${dir}/${file}" ]] && { echo "${dir}/${file}" ; return ; }
 	done
 }
 
