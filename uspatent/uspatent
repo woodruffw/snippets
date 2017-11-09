@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 #	uspatent.rb
 #	Author: William Woodruff
@@ -10,7 +11,7 @@
 
 require "open-uri"
 
-URL = "https://patentimages.storage.googleapis.com/pdfs/%{patent}"
+URL = "https://patentimages.storage.googleapis.com/pdfs/%<patent>s"
 
 number = ARGV.shift
 
@@ -20,12 +21,11 @@ patent = "US#{number}.pdf"
 url = URL % { patent: patent }
 
 begin
-	open(url) do |url|
-		open(patent, "wb") do |file|
-			file.write(url.read)
-		end
-	end
+  open(url) do |u|
+    open(patent, "wb") do |file|
+      file.write(u.read)
+    end
+  end
 rescue OpenURI::HTTPError => e
-	abort "Fatal: #{e.to_s}"
+  abort "Fatal: #{e}"
 end
-
