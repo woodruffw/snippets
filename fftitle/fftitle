@@ -17,7 +17,7 @@ function installed {
 }
 
 [[ $# -eq 3 && -f $1 && ! -f $2 && -n $3 ]] || help
-installed ffmpeg2 || { >&2 echo "Missing ffmpeg."; exit 1; }
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
 
 ffmpeg -i "${1}" -vf "drawtext=enable='between(t, 0, 10)':font=Sans:text='${3}':" \
     "fontcolor=white:fontsize=48:box=1:boxcolor=black@0.5:boxborderw=10:" \
