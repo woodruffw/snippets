@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# fftimelapse: Turn a video into a 10x timelapse.
+
+set -eo pipefail
+
+function help {
+    echo "Usage: fftimelapse <input> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 2 && -f $1 && ! -f $2 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+ffmpeg -i "${1}" -r 10 -vf "setpts=0.1*PTS" -an "${2}"
