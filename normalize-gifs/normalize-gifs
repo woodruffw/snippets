@@ -10,7 +10,7 @@
 # http://opensource.org/licenses/MIT
 
 installed() {
-  local cmd=$(command -v "${1}")
+  cmd=$(command -v "${1}")
 
   [[ -n  "${cmd}" ]] && [[ -f "${cmd}" ]]
   return ${?}
@@ -23,6 +23,6 @@ DIMS=${DIMS:-300x300}
 mkdir -p "${DIMS}"
 
 for gif in "${@}"; do
-  printf "Normalizing ${gif}...\n"
-  gifsicle -w --colors 256 --resize "${DIMS}" "${gif}" > "${DIMS}/$(basename ${gif})"
+  echo "Normalizing ${gif}..."
+  gifsicle -w --colors 256 --resize "${DIMS}" "${gif}" > "${DIMS}/$(basename "${gif}")"
 done
