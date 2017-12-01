@@ -2,7 +2,9 @@
 
 // ==UserScript==
 // @name Google Search Neutralizer
+// @namespace yossarian-gsearch-neutralizer
 // @description Removes URL rewrites in Google Search results
+// @locale en
 // @version 1.0.0
 // @include *.google.*/search*
 // ==/UserScript==
