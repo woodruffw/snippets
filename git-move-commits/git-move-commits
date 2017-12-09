@@ -1,4 +1,4 @@
-#!/usr/bin/env/bash
+#!/usr/bin/env bash
 
 # git-move-commits: move the last N commits on the current branch to another branch
 
