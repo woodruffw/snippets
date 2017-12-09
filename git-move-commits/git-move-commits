@@ -1,0 +1,16 @@
+#!/usr/bin/env/bash
+
+# git-move-commits: move the last N commits on the current branch to another branch
+
+usage() {
+    echo "usage: git move-last-commit <branch> [# of commits]"
+    exit
+}
+
+[[ -z "${1}" ]] && usage
+
+ncommits="${2:-1}"
+
+git branch "${1}"
+git reset --hard HEAD~"${ncommits}"
+git checkout "${1}"
