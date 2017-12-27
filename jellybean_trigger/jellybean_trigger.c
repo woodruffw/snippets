@@ -9,6 +9,12 @@
 	remain in the public domain.
 */
 
+/*
+    NOTES:
+    npeaks = 125 works well for the inline button on my headphones (cheap panasonics)
+    npeaks = 64 works well for the jellybean buttons i've used
+*/
+
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -19,27 +25,35 @@
 #define MAX_THRESH 127
 #define IN_THRESH(n) ((n <= MAX_THRESH) && (n >= MIN_THRESH))
 
-int jellybean(char **cmd);
+int jellybean(unsigned int npeaks, char **cmd);
 
 int main(int argc, char **argv)
 {
 	int rc;
+    unsigned int npeaks = 0;
 
-	if (argc < 2) {
-		fprintf(stderr, "Usage: %s <command [arg ...]>\n", argv[0]);
+	if (argc < 3) {
+		printf("Usage: %s <npeaks> <command [arg ...]>\n", argv[0]);
 		return 1;
 	}
 
-	rc = jellybean(argv + 1);
+    sscanf(argv[1], "%u", &npeaks);
+
+    if (!npeaks) {
+        fprintf(stderr, "Fatal: Invalid `npeaks` given (positive integer expected).\n");
+        return 2;
+    }
+
+	rc = jellybean(npeaks, argv + 2);
 
 	return rc;
 }
 
-int jellybean(char **cmd)
+int jellybean(unsigned int npeaks, char **cmd)
 {
 	int esd_socket = 0;
 	esd_format_t format = ESD_BITS16 | ESD_STEREO | ESD_STREAM | ESD_MONITOR;
-	
+
 	while (esd_socket == 0) {
 		esd_socket = esd_record_stream_fallback(format, 1000, NULL, "ppd");
 
@@ -74,7 +88,7 @@ int jellybean(char **cmd)
 			}
 		}
 
-		if (peaks > 65) {
+		if (peaks > npeaks) {
 			switch (pid = fork()) {
 				case 0:
 					if (execvp(cmd[0], cmd) < 0) {
