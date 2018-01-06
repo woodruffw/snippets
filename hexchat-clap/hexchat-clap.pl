@@ -1,4 +1,4 @@
-#   hexchat-spacing.pl
+#   hexchat-clap.pl
 #   Emphasizes👏your👏point👏.
 #   Author: William Woodruff
 #   ------------------------
