@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# ffflagflip: Flip a video 180 degrees by setting its "rotate" metadata flag
+# NOTE: not all video players obey the rotate flag.
+
+set -eo pipefail
+
+function help {
+    echo "Usage: ffflagflip <input> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 2 && -f $1 && ! -f $2 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+ffmpeg -i "${1}" -c copy -metadata:s:v:0 rotate=180 "${2}"
