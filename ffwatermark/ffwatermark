@@ -19,6 +19,7 @@ function installed {
 [[ $# -eq 3 && -f $1 && -f $2 && ! -f $3 ]] || help
 installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
 
+# https://stackoverflow.com/a/10920872
 ffmpeg -i "${1}" -i "${2}" \
     -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2" \
     -codec:a copy "${3}"
