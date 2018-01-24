@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# ffwatermark: Place a watermark image in the center of a video.
+
+set -eo pipefail
+
+function help {
+  echo "Usage: ffwatermark <input> <watermark> <output>"
+  exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 3 && -f $1 && -f $2 && ! -f $3 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+ffmpeg -i "${1}" -i "${2}" \
+    -filter_complex "overlay=(main_w-overlay_w)/2:(main_h-overlay_h)/2" \
+    -codec:a copy "${3}"
