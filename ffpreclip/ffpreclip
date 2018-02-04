@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# ffpreclip: Remove the beginning of a video.
+
+set -eo pipefail
+
+function help {
+    echo "Usage: ffpreclip <input> <timestamp> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 3 && -f $1 && -n $2 && ! -f $3 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+ffmpeg -ss "${2}" -i "${1}" "${3}"
