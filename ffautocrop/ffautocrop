@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# ffautocrop: Attempt to auto-crop a video.
+
+set -eo pipefail
+
+function help {
+    echo "Usage: ffautocrop <input> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 2 && -f $1 && ! -f $2 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+crop=$(ffmpeg -i "${1}" -t 1 -vf cropdetect -f null - 2>&1 | awk '/crop/ { print $NF }' | tail -1)
+
+[[ -n "${crop}" ]] || { >&2 echo "No crop region detected?"; exit 2; }
+
+ffmpeg -i "${1}" -vf "${crop}" "${2}"
