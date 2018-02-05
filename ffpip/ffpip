@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+# ffpip: Make a picture-in-picture video from two inputs.
+
+set -eo pipefail
+
+function help {
+    echo "Usage: ffpip <outer> <inner> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 3 && -f $1 && -f $2 && ! -f $3 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+# http://thewowza.guru/how-to-do-picture-in-picture-with-ffmpeg/
+ffmpeg -i "${1}" -i "${2}" \
+    -filter_complex "[1]scale=iw/4:ih/4 [pip]; [0][pip]overlay=main_w-overlay_w:main_h-overlay_h" \
+    "${3}"
