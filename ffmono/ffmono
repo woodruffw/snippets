@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# ffmono: Convert stereo audio in the input to mono in the output.
+# Comes in handy for badly mastered input (e.g., left channel only).
+
+set -eo pipefail
+
+function help {
+    echo "Usage: ffmono <input> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 2 && -f $1 && ! -f $2 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+ffmpeg -i "${1}" -c:v copy -ac 1 "${2}"
