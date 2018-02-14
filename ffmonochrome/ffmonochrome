@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# ffmonochrome: Convert an input video into a monochromatic output video.
+
+set -eo pipefail
+
+function help {
+    echo "Usage: ffmonochrome <input> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 2 && -f $1 && ! -f $2 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+# format=gray would probably also work
+ffmpeg -i "${1}" -vf hue=s=0 -c:a copy "${2}"
