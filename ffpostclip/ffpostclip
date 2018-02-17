@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# ffpostclip: Remove the end of a video.
+
+set -eo pipefail
+
+function help {
+    echo "Usage: ffpostclip <input> <timestamp> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 3 && -f $1 && -n $2 && ! -f $3 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+# remove `-c copy` if your format needs re-encoding
+ffmpeg -t "${2}" -i "${1}" -c copy "${3}"
