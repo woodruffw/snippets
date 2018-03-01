@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+# vboxssh: set up a temporary port forwarding rule to a vbox VM and ssh to it
+
+set -eo pipefail
+
+function die {
+    echo "${*}"
+    exit 1
+}
+
+function info {
+    >&2 echo "[+] ${*}"
+}
+
+function help {
+  echo "Usage: vboxssh <vmname> [user]"
+  exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+function freeport {
+    # https://unix.stackexchange.com/a/132524
+    python -c \
+    'import socket; s=socket.socket(); s.bind(("", 0)); print(s.getsockname()[1]); s.close()'
+}
+
+function cleanup {
+    info "Cleaning up..."
+    vboxmanage controlvm "${vmname}" natpf1 delete "ssh" >/dev/null 2>&1
+}
+
+[[ $# -ge 1 ]] || help
+installed python || die "Missing python."
+installed vboxmanage || die "Missing vboxmanage."
+
+trap cleanup exit
+
+vmname="${1}"
+username="${2:-$(whoami)}"
+hostport="$(freeport)"
+
+info "Making sure the VM exists and is running..."
+
+vboxmanage list vms | grep -q -- "${vmname}" || die "No such VM."
+vboxmanage list runningvms | grep -q -- "${vmname}" || die "Are you sure '${vmname}' is running?"
+
+info "Setting up the forwarding rule..."
+
+vboxmanage controlvm "${vmname}" natpf1 "ssh,tcp,,${hostport},,22"
+
+info "Success! Host port: ${hostport}"
+
+ssh -p "${hostport}" -l "${username}" localhost
+
+exit 0
