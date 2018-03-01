@@ -40,11 +40,11 @@ function cleanup {
 installed python || die "Missing python."
 installed vboxmanage || die "Missing vboxmanage."
 
-trap cleanup exit
-
 vmname="${1}"
 username="${2:-$(whoami)}"
 hostport="$(freeport)"
+
+trap cleanup exit
 
 info "Making sure the VM exists and is running..."
 
