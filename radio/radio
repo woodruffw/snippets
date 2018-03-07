@@ -11,30 +11,30 @@
 
 player="mpv"
 playeropts="--force-window=no --no-ytdl"
-cmd="${1:-usage}"
+command="${1:-usage}"
 
 function error() {
-	>&2 printf "Fatal: ${@}. Exiting.\n"
+	>&2 echo "Fatal: ${*}. Exiting."
 	exit 2
 }
 
 function installed() {
-	local cmd=$(command -v "${1}")
+	cmd=$(command -v "${1}")
 
 	[[ -n  "${cmd}" ]] && [[ -f "${cmd}" ]]
 	return ${?}
 }
 
 function usage() {
-	printf "Usage: $(basename ${0}) <station|list>\n"
+	echo "Usage: $(basename "${0}") <station|list>"
 	list_stations
 	exit
 }
 
 function list_stations() {
-	printf "Available stations:\n"
+	echo "Available stations:"
 	for station in "${!stations[@]}"; do
-		printf "\t${station}\n"
+		echo -e "\t${station}"
 	done
 }
 
@@ -45,17 +45,17 @@ installed "${player}" || error "Missing dependency: '${player}'"
 declare -A stations
 source ~/.radiorc
 
-[[ -z "${stations}" ]] || error "Missing radio stations in ~/.radiorc"
+[[ -z "${stations[0]}" ]] || error "Missing radio stations in ~/.radiorc"
 
-if [[ "${cmd}" = "usage" ]]; then
+if [[ "${command}" = "usage" ]]; then
 	usage
-elif [[ "${cmd}" = "list" ]]; then
+elif [[ "${command}" = "list" ]]; then
 	list_stations
 else
-	station="${stations["${cmd}"]}"
+	station="${stations["${command}"]}"
 
 	if [[ -z "${station}" ]]; then
-		printf "No such station: '${cmd}'.\n"
+		echo "No such station: '${command}'."
 		list_stations
 		exit 1
 	else
