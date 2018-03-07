@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# ffclip: Cut a period of time (start to end) out of a video.
+
+set -eo pipefail
+
+function help {
+    echo "Usage: ffclip <input> <start> <stop> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 4 && -f $1 && ! -f $4 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+# remove `-c copy` if your format needs re-encoding
+ffmpeg -i "${1}" -ss "${2}" -to "${3}" -c copy "${4}"
