@@ -5,7 +5,7 @@
 set -eo pipefail
 
 function help {
-  echo "Usage: fftitle <input> <output> <title>"
+  echo "Usage: fftitle <input> <title> <output>"
   exit
 }
 
@@ -16,9 +16,9 @@ function installed {
     return ${?}
 }
 
-[[ $# -eq 3 && -f $1 && ! -f $2 && -n $3 ]] || help
+[[ $# -eq 3 && -f $1 && -n $2 && ! -f $3 ]] || help
 installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
 
-ffmpeg -i "${1}" -vf "drawtext=enable='between(t, 0, 10)':font=Sans:text='${3}': \
+ffmpeg -i "${1}" -vf "drawtext=enable='between(t, 0, 10)':font=Sans:text='${2}': \
     fontcolor=white:fontsize=48:box=1:boxcolor=black@0.5:boxborderw=10: \
-    x=(w-text_w)/2:y=(h-text_h)/2" -an "${2}"
+    x=(w-text_w)/2:y=(h-text_h)/2" -an "${3}"
