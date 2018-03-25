@@ -1,15 +1,15 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-#	uspatent.rb
-#	Author: William Woodruff
-#	------------------------
-#	Fetches a filed US patent by number in PDF format.
-#	------------------------
-#	This code is licensed by William Woodruff under the MIT License.
-#	http://opensource.org/licenses/MIT
+# uspatent.rb
+# Author: William Woodruff
+# ------------------------
+# Fetches a filed US patent by number in PDF format.
+# ------------------------
+# This code is licensed by William Woodruff under the MIT License.
+# http://opensource.org/licenses/MIT
 
-require "open-uri"
+require "net/http"
 
 URL = "https://patentimages.storage.googleapis.com/pdfs/%<patent>s"
 
@@ -21,11 +21,7 @@ patent = "US#{number}.pdf"
 url = URL % { patent: patent }
 
 begin
-  open(url) do |u|
-    open(patent, "wb") do |file|
-      file.write(u.read)
-    end
-  end
-rescue OpenURI::HTTPError => e
+  File.write patent, Net::HTTP.get(URI(url))
+rescue Net::HTTPError => e
   abort "Fatal: #{e}"
 end
