@@ -15,13 +15,13 @@ require "slop"
 VERSION = 1
 
 opts = Slop.parse do |o|
-  o.banner = <<~EOS
+  o.banner = <<~HELP
     Dump a Ruby script as a compiled sequence of instructions.
     Saves the result with a .vm suffix.
 
     Usage:
       rubyvm-dump [--marshal] <file>
-  EOS
+  HELP
 
   o.bool "-m", "--marshal", "Serialize the instructions (not human readable)"
 
