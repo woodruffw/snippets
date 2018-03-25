@@ -30,7 +30,7 @@ EXTERNAL_DEPS.each do |dep|
 end
 
 opts = Slop.parse do |o|
-  o.banner = <<~EOS
+  o.banner = <<~HELP
     Group GIFs into random groups of similar total length, then combine
     those groups into singlular GIFs and save them.
 
@@ -39,7 +39,7 @@ opts = Slop.parse do |o|
 
     Example:
       gif-length-groups -l 60 -d groups *.gif
-  EOS
+  HELP
 
   o.int "-n", "--num-groups", "the number of groups to build", default: 100
   o.int "-l", "--group-length", "the length of each group (secs)", default: 60
