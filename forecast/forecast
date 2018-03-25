@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # forecast.rb
 # Author: William Woodruff
@@ -29,8 +30,8 @@ begin
 
   # even period numbers are day forecasts, odds are night forecasts
   days = forecast["txt_forecast"]["forecastday"].select { |w| w["period"].even? }
-rescue => e
-  puts "Something blew up: #{e.to_s}."
+rescue StandardError => e
+  puts "Something blew up: #{e}."
 end
 
 days.each do |day|
