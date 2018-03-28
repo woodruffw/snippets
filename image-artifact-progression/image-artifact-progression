@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+# image-artifact-progression: Create a progression video of the quality degredation of an image
+
+set -eo pipefail
+
+function help {
+  echo "Usage: image-artifact-progression <image> <output> [level]"
+  exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+function info {
+    >&2 echo "${*}"
+}
+
+function fail {
+    info "${*}"
+    exit 1
+}
+
+image="${1}"
+output="${2}"
+level="${3:-50}"
+
+[[ -f "${image}" && ! -f "${output}" && -n "${level}" ]] || help
+
+installed convert || fail "Missing convert."
+installed ffmpeg || fail "Missing ffmpeg."
+
+[[ -d frames/ ]] && rm -rf frames/*
+
+mkdir -p frames/
+convert "${image}" frames/frame0.jpg
+
+for (( i = 1; i < "${level}"; i++ )); do
+    info "[+] Creating frame ${i}..."
+    convert "frames/frame$((i - 1)).jpg" -quality "$(( (RANDOM % 40) + 10))" "frames/frame${i}.jpg"
+done
+
+info "[+] Stitching the frames together..."
+ffmpeg -framerate 10 -i "frames/frame%d.jpg" -c:v libx264 -pix_fmt yuv420p "${output}"
+
+rm -rf frames
