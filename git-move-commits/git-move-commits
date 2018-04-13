@@ -3,7 +3,7 @@
 # git-move-commits: move the last N commits on the current branch to another branch
 
 usage() {
-    echo "usage: git move-last-commit <branch> [# of commits]"
+    echo "usage: git move-commits <branch> [# of commits]"
     exit
 }
 
