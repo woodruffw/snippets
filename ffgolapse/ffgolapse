@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# ffgolapse: Convert a sequence of GOPRO folders (containing images) into a timelapse
+
+set -eo pipefail
+
+function help {
+  echo "Usage: ffgolapse <output>"
+  exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 1 && ! -f $1 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+# Note the glob: if you're not in a directory containing GoPro directories, you're SOL.
+ffmpeg -r 10 -pattern_type glob -i '*GOPRO/*.JPG' "${1}"
