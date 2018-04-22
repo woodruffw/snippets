@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# fetch-bbc-sfx: Fetch the entire BBC Sound Effects Archive.
+# Note: Sound effects are downloaded sequentially, to avoid hogging the service.
+# All sound effects are copyrighted by the BBC and
+# licensed under the terms of the RemArc license.
+
+require "csv"
+require "json"
+require "net/http"
+
+CSV_URL = "http://bbcsfx.acropolis.org.uk/assets/BBCSoundEffects.csv"
+ASSET_BASE = "http://bbcsfx.acropolis.org.uk/assets/%<location>s"
+
+def try_fetch(url)
+  Net::HTTP.get(URI(url))
+rescue Net::HTTPError => e
+  abort "Fetch of #{url} failed: #{e}"
+end
+
+puts "[+] Fetching the SFX manifest..."
+csv_data = try_fetch CSV_URL
+
+CSV.parse(csv_data, headers: true) do |row|
+  location = row["location"]
+  asset_url = ASSET_BASE % { location: location }
+
+  puts "[+] Saving #{location}..."
+  wav = try_fetch asset_url
+  File.write location, wav
+end
