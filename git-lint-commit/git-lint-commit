@@ -6,7 +6,7 @@
 VERSION = "1.0.4"
 
 def usage
-  puts <<~EOS
+  puts <<~USAGE
     Usage:
       git lint-commit [commit|-]
 
@@ -16,7 +16,7 @@ def usage
 
       Otherwise, standard input is linted. Supplying - also causes
       the linter to read from standard input.
-  EOS
+  USAGE
 
   exit
 end
@@ -27,12 +27,12 @@ def version
   exit
 end
 
-def w(l, s)
-  puts "W: Line #{l}: #{s}"
+def w(line, msg)
+  puts "W: Line #{line}: #{msg}"
 end
 
-def e(l, s)
-  puts "E: Line #{l}: #{s}"
+def e(line, msg)
+  puts "E: Line #{line}: #{msg}"
 end
 
 usage if ARGV.include?("--help") || ARGV.include?("-h")
