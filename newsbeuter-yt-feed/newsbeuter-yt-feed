@@ -18,8 +18,8 @@ DEPS = [
 
 NEWSBEUTER_URL_FILES = [
   # is this is right precedence?
-  File.expand_path("~/.newsbeuter/urls"),
   File.expand_path("~/.config/newsbeuter/urls"),
+  File.expand_path("~/.newsbeuter/urls"),
 ].freeze
 
 YOUTUBE_FEED_URLS = {
