@@ -29,8 +29,8 @@ installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
 input350=$(mktemp -u ffdialtone-input350-XXXXX.wav)
 input440=$(mktemp -u ffdialtone-input440-XXXXX.wav)
 
-ffmpeg -f lavfi -i "sine=frequency=350:duration=${1}" "${input350}"
-ffmpeg -f lavfi -i "sine=frequency=440:duration=${1}" "${input440}"
+ffmpeg -f lavfi -i "sine=frequency=350:duration=${1}" -af "volume=-13dB" "${input350}"
+ffmpeg -f lavfi -i "sine=frequency=440:duration=${1}" -af "volume=-13dB" "${input440}"
 
 # if you'd like to output in GSM full-rate:
 # ffmpeg -i "${input350}" -i "${input440}" -filter_complex "amix=inputs=2:duration=first" \
