@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# ffdialtone: Generate a US (North American) dialtone with the given duration.
+
+set -eo pipefail
+
+function help {
+    echo "Usage: ffdialtone <duration> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+function cleanup {
+    rm -f "${input350}"
+    rm -f "${input440}"
+}
+
+trap cleanup EXIT
+
+[[ $# -eq 2 && ! -f $2 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+input350=$(mktemp -u ffdialtone-input350-XXXXX.wav)
+input440=$(mktemp -u ffdialtone-input440-XXXXX.wav)
+
+ffmpeg -f lavfi -i "sine=frequency=350:duration=${1}" "${input350}"
+ffmpeg -f lavfi -i "sine=frequency=440:duration=${1}" "${input440}"
+
+# if you'd like to output in GSM full-rate:
+# ffmpeg -i "${input350}" -i "${input440}" -filter_complex "amix=inputs=2:duration=first" \
+#     -ar 8000 -ab 13000 -ac 1 "${2}"
+
+ffmpeg -i "${input350}" -i "${input440}" -filter_complex "amix=inputs=2:duration=first" "${2}"
