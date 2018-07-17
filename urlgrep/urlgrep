@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# urlgrep: Read input files and print lines that are valid URIs/URLs.
+
+require "optparse"
+require "uri"
+
+options = {}
+OptionParser.new do |opts|
+  opts.banner = "Usage: urlgrep [options] [FILE ...]"
+
+  opts.on "-p", "--protocols PROTOS", Array do |protos|
+    options[:protos] = protos
+  end
+end.parse!
+
+pattern = URI.regexp options[:protos]
+no_match = true
+
+ARGF.each_line.any? do |line|
+  if line.match? pattern
+    puts line
+    no_match = false
+  end
+end
+
+exit 1 if no_match
