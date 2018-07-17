@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# urlgrep: Read input files and print lines that are valid URIs/URLs.
+# urlgrep: Read input files and print lines that contain valid URIs/URLs.
 
 require "optparse"
 require "uri"
