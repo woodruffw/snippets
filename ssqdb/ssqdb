@@ -21,7 +21,7 @@ require "erb"
 require "cgi"
 require "json"
 
-VERSION = 6
+VERSION = 7
 
 CSS = <<~CSS
   body {
@@ -181,6 +181,7 @@ def help
       --json      Generate JSON files in addition to HTML
       --help      Print this help message
       --version   Print version information
+      --verbose   Write verbose information to stderr
   HELP
 
   exit 0
@@ -198,7 +199,7 @@ end
 
 opts = {
   json: !!ARGV.delete("--json"),
-  help: !!ARGV.delete("--help"),
+  help: !!ARGV.delete("--help") || !!ARGV.delete("-h"),
   version: !!ARGV.delete("--version"),
   verbose: !!ARGV.delete("--verbose"),
 }
