@@ -21,58 +21,68 @@ require "erb"
 require "cgi"
 require "json"
 
-VERSION = 5
+VERSION = 6
 
-HEADER = <<~EOS
+CSS = <<~CSS
+  body {
+    background-color: #F6F6F6;
+    font-family: monospace;
+    color: #222;
+    max-width: 50em;
+    margin: auto;
+    padding: 1em;
+  }
+
+  a {
+    color: #555;
+  }
+
+  pre {
+    overflow: auto;
+    white-space: pre-wrap;
+  }
+
+  .quote-link {
+    text-decoration: none;
+  }
+
+  .quote-header {
+    padding-left: 0.5em;
+    padding-top: 0.5em;
+    color: #555;
+  }
+
+  .quote-text {
+    padding: 0 .5em .5em .5em;
+  }
+
+  .quote {
+    padding: 0;
+    margin: 0;
+  }
+
+  .quote:nth-of-type(odd) {
+    background-color: #e0e0e0;
+    padding-bottom: 0.1em;
+    margin-bottom: -0.5em;
+  }
+CSS
+
+HEADER = <<~HEADER
   <html>
     <head>
       <meta charset="UTF-8">
       <title><%= title %> <%= " - quote \\#\#{index}" if defined? index %></title>
       <style type="text/css">
-        body {
-          background-color: #F6F6F6;
-          font-family: monospace;
-          color: #222;
-          max-width: 50em;
-          margin: auto;
-          padding: 1em;
-        }
-
-        a {
-          color: #555;
-        }
-
-        pre {
-          overflow: auto;
-          white-space: pre-wrap;
-        }
-
-        .quote-link {
-          text-decoration: none;
-        }
-
-        .quote-header {
-          padding-left: 0.5em;
-          padding-top: 0.5em;
-          color: #555;
-        }
-
-        .quote-text {
-          padding: 0 .5em .5em .5em;
-        }
-
-        .quote {
-          padding: 0;
-          margin: 0;
-        }
-
-        .quote:nth-of-type(odd) {
-          background-color: #e0e0e0;
-          padding-bottom: 0.1em;
-          margin-bottom: -0.5em;
-        }
+        #{CSS}
       </style>
       <script type="text/javascript">
+        function urlify(node) {
+          var urlRegex = /(https?:\\/\\/[^\\s]+)/g;
+          var newContent = node.innerHTML.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+          node.innerHTML = newContent;
+        }
+
         function makeUrl(count) {
           var num = Math.floor(Math.random() * count);
           window.location = "quote" + num + ".html";
@@ -96,18 +106,19 @@ HEADER = <<~EOS
       <a href="#" id="random" onclick="randomQuote();">random</a> /
       <a href="quotes.db">db</a> /
       <a href="about.html">about</a>
-EOS
+HEADER
 
-FOOTER = <<~EOS
+FOOTER = <<~FOOTER
   </body>
   </html>
-EOS
+FOOTER
 
-QUOTE = <<~EOS
+QUOTE = <<~QUOTE
   <div class="quote">
   <h5 class="quote-header">
     quote #<%= index %>
     <a class="quote-link" href="quote<%= index %>.html">(&rarr;)</a>
+    <a class="quote-link" href="#" onclick="urlify(this.parentNode.parentNode)">(urls)</a>
     <% if opts[:json] %>
       <a class="quote-link" href="quote<%= index %>.json">(json)</a>
     <% end %>
@@ -116,9 +127,9 @@ QUOTE = <<~EOS
   <%= quote %>
   </pre>
   </div>
-EOS
+QUOTE
 
-INDEX_PAGE = <<~EOS
+INDEX_PAGE = <<~INDEX
   #{HEADER}
 
   <% html_quotes.each_with_index do |quote, index| %>
@@ -126,17 +137,17 @@ INDEX_PAGE = <<~EOS
   <% end %>
 
   #{FOOTER}
-EOS
+INDEX
 
-QUOTE_PAGE = <<~EOS
+QUOTE_PAGE = <<~QUOTE
   #{HEADER}
 
   #{QUOTE}
 
   #{FOOTER}
-EOS
+QUOTE
 
-ABOUT_PAGE = <<~EOS
+ABOUT_PAGE = <<~ABOUT
   #{HEADER}
 
   <p>
@@ -161,16 +172,16 @@ ABOUT_PAGE = <<~EOS
   </p>
 
   #{FOOTER}
-EOS
+ABOUT
 
 def help
-  puts <<~EOS
+  puts <<~HELP
     Usage: #{$PROGRAM_NAME} <quote file> [output directory] [title] [options]
     Options:
       --json      Generate JSON files in addition to HTML
       --help      Print this help message
       --version   Print version information
-  EOS
+  HELP
 
   exit 0
 end
@@ -181,10 +192,15 @@ def version
   exit 0
 end
 
+def verbose(msg, level: 0)
+  STDERR.puts "#{"\t" * level}[+] #{msg}"
+end
+
 opts = {
   json: !!ARGV.delete("--json"),
   help: !!ARGV.delete("--help"),
   version: !!ARGV.delete("--version"),
+  verbose: !!ARGV.delete("--verbose"),
 }
 
 help    if opts[:help]
@@ -206,21 +222,31 @@ html_quotes = quotes.map do |quote|
   CGI.escapeHTML(quote)
 end
 
+verbose "generating count, quotes.db, index, and about"
+
 File.write(File.join(output_dir, "count"), quotes.size)
 File.write(File.join(output_dir, "quotes.db"), quotes_string)
 File.write(File.join(output_dir, "index.html"), ERB.new(INDEX_PAGE).result(binding))
 File.write(File.join(output_dir, "about.html"), ERB.new(ABOUT_PAGE).result(binding))
 
+verbose "generating individual quote pages"
+
 html_quotes.each_with_index do |quote, index|
   html_file = File.join(output_dir, "quote#{index}.html")
   File.write(html_file, ERB.new(QUOTE_PAGE).result(binding))
+
+  verbose "generated #{html_file}", level: 1
 end
 
 if opts[:json]
+  verbose "generating individual json files (requested)"
+
   quotes.each_with_index do |quote, index|
     json_file = File.join(output_dir, "quote#{index}.json")
     blob      = { count: index, quote: quote }
 
     File.write(json_file, blob.to_json)
+
+    verbose "generated #{json_file}", level: 1
   end
 end
