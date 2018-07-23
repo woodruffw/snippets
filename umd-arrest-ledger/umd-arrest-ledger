@@ -1,52 +1,50 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-#	umd-arrest-ledger.rb
-#	Author: William Woodruff
-#	------------------------
-#	Fetch UMD arrest records for the given year and dump them as JSON.
-#	------------------------
-#	This code is licensed by William Woodruff under the MIT License.
-#	http://opensource.org/licenses/MIT
+#  umd-arrest-ledger.rb
+#  Author: William Woodruff
+#  ------------------------
+#  Fetch UMD arrest records for the given year and dump them as JSON.
+#  ------------------------
+#  This code is licensed by William Woodruff under the MIT License.
+#  http://opensource.org/licenses/MIT
 
-require 'open-uri'
-require 'nokogiri'
-require 'json'
+require "open-uri"
+require "nokogiri"
+require "json"
 
-URL = 'http://www.umpd.umd.edu/stats/arrest_report.cfm?year=%{year}'
+URL = "http://www.umpd.umd.edu/stats/arrest_report.cfm?year=%<year>d"
 
 year = ARGV.shift.to_i
 
-if year.nil?
-	abort("Usage: #{$PROGRAM_NAME} <year>")
-end
+abort("Usage: #{$PROGRAM_NAME} <year>") if year.nil?
 
 # ledgers before 11/2010 used a different format
-if !year.between?(2010, Time.now.year)
-	abort("Data is only available between 2010 and the current year.")
+unless year.between?(2010, Time.now.year)
+  abort("Data is only available between 2010 and the current year.")
 end
 
 data = {}
 url = URL % { year: year }
 
 html = Nokogiri::HTML(open(url).read)
-trs = html.css('table').first.css('tr')
+trs = html.css("table").first.css("tr")
 trs.shift # remove the description <tr>
 
 trs.each_slice(2) do |tr0, tr1|
-	# i am not proud of this.
-	entry = tr0.css('td').to_a.concat(tr1.css('td').to_a).map(&:text).map(&:strip)
+  # i am not proud of this.
+  entry = tr0.css("td").to_a.concat(tr1.css("td").to_a).map(&:text).map(&:strip)
 
-	data[entry[0]] = {
-		arrest_time: entry[1],
-		case_number: entry[2],
-		age: entry[3],
-		race: entry[4],
-		sex: entry[5],
-		charge: entry[6]
-	}
+  data[entry[0]] = {
+    arrest_time: entry[1],
+    case_number: entry[2],
+    age: entry[3],
+    race: entry[4],
+    sex: entry[5],
+    charge: entry[6],
+  }
 end
 
 File.open("#{year}.json", "w") do |file|
-	file.write(JSON.pretty_generate(data))
+  file.write(JSON.pretty_generate(data))
 end
-
