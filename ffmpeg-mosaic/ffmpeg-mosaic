@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 # ffmpeg-mosaic.rb
 # Author: William Woodruff
@@ -22,9 +23,7 @@ inputs = ARGV
 
 abort("Please add another row or column.") if rows * columns < inputs.size
 
-unless !inputs.empty? && inputs.all? { |i| File.file?(i) }
-  abort "One or more invalid inputs."
-end
+abort "One or more invalid inputs." unless !inputs.empty? && inputs.all? { |i| File.file?(i) }
 
 pane_width = width / rows
 pane_height = height / columns
@@ -62,11 +61,11 @@ input_mosaic.each_with_index do |row, i|
     tmp_next = "tmp#{idx}"
     xy = ":x=#{pane_width * j}:y=#{pane_height * i}"
 
-    if idx != inputs.size - 1
-      filter << "[#{tmp}][a#{idx}] overlay=shortest=#{shortest}#{xy} [#{tmp_next}];\n"
-    else # last input has special syntax
-      filter << "[#{tmp}][a#{idx}] overlay=shortest=#{shortest}#{xy}"
-    end
+    filter << if idx != inputs.size - 1
+                "[#{tmp}][a#{idx}] overlay=shortest=#{shortest}#{xy} [#{tmp_next}];\n"
+              else # last input has special syntax
+                "[#{tmp}][a#{idx}] overlay=shortest=#{shortest}#{xy}"
+              end
 
     tmp = tmp_next
   end
