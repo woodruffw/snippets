@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# ffsbs: Place two videos side-by-side.
+
+set -eo pipefail
+
+function help {
+    echo "Usage: ffsbs <left> <right> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 3 && -f $1 && -f $2 && ! -f $3 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+# https://unix.stackexchange.com/a/233833
+ffmpeg -i "${1}" -i "${2}" -filter_complex \
+    "[0:v] pad=iw*2:ih[int];
+    [int][1:v]overlay=W/2:0[vid]" \
+    -map "[vid]" "${3}"
