@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+# fffaceblur: Attempt to blur faces within a video.
+
+# TODO: Use -filter_complex to perform the blur (faster, eliminates IM dep)
+# TODO: Provide a guessing heuristic, e.g. 1 frame with no face detected between
+#       10 frames with detected faces means that there's probably a face in that frame.
+
+function help {
+    echo "Usage: fffaceblur <input> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+function cleanup {
+    rm -rf "${frames_dir}" "${audio_file}"
+}
+
+function blur_frame {
+    echo "[+] Blurring ${1}"
+
+    # This builds the blur command up so that we don't have to call `convert`
+    # N times for N faces.
+    # TODO: Is +clone faster than -clone 0?
+    local cmd="convert ${1} -gravity NorthWest"
+    local has_face
+    while read -r x y w h; do
+        has_face=1
+        cmd+=" \\( +clone -region "${w}x${h}+${x}+${y}" -blur 0x8 \\)"
+    done < <(facedetect "${1}")
+    cmd+=" -composite ${1}"
+
+    [[ -n "${has_face}" ]] && eval "${cmd}"
+}
+
+trap cleanup exit
+
+frames_dir=$(mktemp --tmpdir -d fffaceblur_frames_XXXXX)
+
+[[ $# -eq 2 && -f $1 && ! -f $2 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+installed ffprobe || { >&2 echo "Missing ffprobe."; exit 1; }
+installed facedetect || { >&2 echo "Missing facedetect."; exit 1; }
+installed convert || { >&2 echo "Missing convert."; exit 1; }
+
+framerate=$(ffprobe -v 0 -of csv=p=0 -select_streams v:0 -show_entries stream=r_frame_rate "${1}")
+framerate=$(bc -l <<< "${framerate}")
+
+audio_fmt=$(ffprobe -v 0 -of csv=p=0 -select_streams a:0 -show_entries stream=codec_name "${1}")
+
+if [[ -n "${audio_fmt}" ]]; then
+    audio_file=$(mktemp -u fffaceblur_audio_XXXXX."${audio_fmt}")
+    ffmpeg -i "${1}" -acodec copy -vn "${audio_file}"
+else
+    >&2 echo "Couldn't find an audio stream, so not including one in the output."
+fi
+
+# Ten digits should be enough, but you can increase that as your usecase requires.
+ffmpeg -i "${1}" -r "${framerate}" -f image2 "${frames_dir}/frame-%10d.png"
+
+for frame in "${frames_dir}"/* ; do
+    blur_frame "${frame}"
+done
+
+if [[ -n "${audio_file}" ]]; then
+    ffmpeg -r "${framerate}" -i "${frames_dir}/frame-%10d.png" -i "${audio_file}" \
+        -vcodec copy -acodec copy "${2}"
+else
+    ffmpeg -r "${framerate}" -i "${frames_dir}/frame-%10d.png" "${2}"
+fi
