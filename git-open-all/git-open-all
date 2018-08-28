@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# git-open-all: open all files changed in the current branch in the user's $EDITOR
+
+set -eo pipefail
+
+[[ -n "${EDITOR}" ]] || { >&2 echo "Refusing to continue without EDITOR."; exit; }
+
+current=$(git rev-parse --abbrev-ref HEAD)
+
+git diff --name-only "${current}" "$(git merge-base "${current}" master)" | xargs "${EDITOR}"
