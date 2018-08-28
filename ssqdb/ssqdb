@@ -21,7 +21,7 @@ require "erb"
 require "cgi"
 require "json"
 
-VERSION = 8
+VERSION = 9
 
 GENERATED_AT = Time.now.to_i
 
@@ -70,43 +70,52 @@ CSS = <<~CSS
   }
 CSS
 
+JS = <<~JS
+  function urlify() {
+    var urlRegex = /(https?:\\/\\/[^\\s]+)/g;
+    var newContent = document.body.innerHTML.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
+    document.body.innerHTML = newContent;
+  }
+
+  function makeUrl(count) {
+    var num = Math.floor(Math.random() * count);
+    window.location = "quote" + num + ".html";
+  }
+
+  function randomQuote() {
+    var req = new XMLHttpRequest();
+    req.onreadystatechange = function() {
+      if (req.readyState == 4 && req.status == 200) {
+        makeUrl(req.responseText);
+      }
+    }
+
+    req.open("GET", "count", true);
+    req.send(null);
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    document.getElementById("random-quote").addEventListener("click", randomQuote);
+    var urlifiers = document.querySelectorAll("#urlify-btn");
+
+    urlifiers.forEach(function(urlifier) {
+      urlifier.addEventListener("click", urlify);
+    });
+  });
+JS
+
 HEADER = <<~HEADER
   <html>
     <head>
       <meta charset="UTF-8">
       <meta name="generated-at" content="#{GENERATED_AT}">
       <title><%= title %> <%= " - quote \\#\#{index}" if defined? index %></title>
-      <style type="text/css">
-        #{CSS}
-      </style>
-      <script type="text/javascript">
-        function urlify(node) {
-          var urlRegex = /(https?:\\/\\/[^\\s]+)/g;
-          var newContent = node.innerHTML.replace(urlRegex, '<a href="$1" target="_blank">$1</a>');
-          node.innerHTML = newContent;
-        }
-
-        function makeUrl(count) {
-          var num = Math.floor(Math.random() * count);
-          window.location = "quote" + num + ".html";
-        }
-
-        function randomQuote() {
-          var req = new XMLHttpRequest();
-          req.onreadystatechange = function() {
-            if (req.readyState == 4 && req.status == 200) {
-              makeUrl(req.responseText);
-            }
-          }
-
-          req.open("GET", "count", true);
-          req.send(null);
-        }
-      </script>
+      <link rel="stylesheet" href="ssqdb.css">
+      <script src="ssqdb.js" defer></script>
     </head>
     <body>
       <a href="index.html">all</a> /
-      <a href="#" id="random" onclick="randomQuote();">random</a> /
+      <a href="#" id="random-quote">random</a> /
       <a href="quotes.db">db</a> /
       <a href="about.html">about</a>
 HEADER
@@ -121,7 +130,7 @@ QUOTE = <<~QUOTE
   <h5 class="quote-header">
     quote #<%= index %>
     <a class="quote-link" href="quote<%= index %>.html">(&rarr;)</a>
-    <a class="quote-link" href="#" onclick="urlify(this.parentNode.parentNode)">(urls)</a>
+    <a class="quote-link" href="#" id="urlify-btn">(urls)</a>
     <% if opts[:json] %>
       <a class="quote-link" href="quote<%= index %>.json">(json)</a>
     <% end %>
@@ -234,11 +243,13 @@ html_quotes = quotes.map do |quote|
   CGI.escapeHTML(quote)
 end
 
-verbose "generating count, quotes.db, index, and about"
+verbose "generating count, quotes.db, index/css/js, and about"
 
 File.write(File.join(output_dir, "count"), quotes.size)
 File.write(File.join(output_dir, "quotes.db"), quotes_string)
 File.write(File.join(output_dir, "index.html"), ERB.new(INDEX_PAGE).result(binding))
+File.write(File.join(output_dir, "ssqdb.css"), CSS)
+File.write(File.join(output_dir, "ssqdb.js"), JS)
 File.write(File.join(output_dir, "about.html"), ERB.new(ABOUT_PAGE).result(binding))
 
 verbose "generating individual quote pages"
