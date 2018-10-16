@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# vbnla: Very basic nginx log analysis.
+# Feed it a standard nginx access.log on stdin.
+
+require "json"
+
+LOGFORMAT = %r{
+  (?<ip>.+)
+  \s
+  -
+  \s
+  (?<user>.+)
+  \s
+  \[(?<time>.+)\]
+  \s
+  \"(?<req>.+)\"
+  \s
+  (?<stat>\d{3})
+  \s
+  (?<size>\d+)
+  \s
+  \"(?<ref>.*)\"
+  \s
+  \"(?<ua>.*)\"
+}x
+
+hist = Hash.new { |hash, key| hash[key] = Hash.new(0) }
+lines = 1
+
+STDIN.each_line do |line|
+  lines += 1
+  # I'd use MatchData#named_captures here,
+  # but my server is still on Ruby 2.3.
+  hsh = LOGFORMAT.names.zip(LOGFORMAT.match(line).captures).to_h rescue next
+
+  hsh.each do |k, v|
+    hist[k][v] += 1
+  end
+end
+
+puts <<~SUMMARY
+  Total requests: #{lines}
+  Unique IPs: #{hist["ip"].size}
+  Top 10 IPs:
+  \t#{hist["ip"].to_a.max_by(10, &:last).map { |e| "#{e[0]} -> #{e[1]}" }.join("\n\t")}
+
+  Top 10 UAs:
+  \t#{hist["ua"].to_a.max_by(10, &:last).map { |e| "#{e[0]} -> #{e[1]}" }.join("\n\t")}
+
+  Top 10 requests:
+  \t#{hist["req"].to_a.max_by(10, &:last).map { |e| "#{e[0]} -> #{e[1]}" }.join("\n\t")}
+SUMMARY
