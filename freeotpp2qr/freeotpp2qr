@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# freeotpp2qr: Converts a FreeOTP+ JSON backup into usable QR codes
+
+require "json"
+require "cgi"
+require "base32"
+require "open3"
+
+KEY_FORMAT = "otpauth://%<type>s/%<label>s?" \
+             "secret=%<secret>s&" \
+             "issuer=%<issuer>s&" \
+             "algorithm=%<algorithm>s&" \
+             "digits=%<digits>s&" \
+             "period=%<period>s"
+
+QRENCODE_ARGS = %w[qrencode -s 12 -o -].freeze
+
+hsh = JSON.parse(STDIN.read, symbolize_names: true)
+
+STDERR.puts "Displaying #{hsh[:tokens].size} QRs..."
+
+hsh[:tokens].each do |token|
+  if token[:type].downcase! != "totp"
+    STDERR.puts "[!] non-TOTP token encountered, and I can't handle that yet!"
+    next
+  end
+
+  # Experimentally, the account name is stored under "label"
+  # and the issuer is stored under "issuerInt". There are also
+  # "issuerExt" and "issuerAlt" keys, and the former appears
+  # to be a fallback for "issuerInt".
+  account = token[:label]
+  issuer = token[:issuerInt] || token[:issuerExt]
+
+  if account.nil? || issuer.nil?
+    STDERR.puts "[!] No account or issuer name for #{token}, skipping!"
+    next
+  end
+
+  label = CGI.escape "#{issuer}:#{account}"
+
+  otpuri = KEY_FORMAT % {
+    type: token[:type],
+    label: label,
+    secret: Base32.encode(token[:secret].pack("c*")).delete("="),
+    issuer: CGI.escape(issuer),
+    algorithm: token[:algo],
+    digits: token[:digits],
+    period: token[:period],
+  }
+
+  png, status = Open3.capture2(*QRENCODE_ARGS, stdin_data: otpuri)
+
+  abort "Couldn't run qrencode!" unless status.success?
+
+  _, status = Open3.capture2("feh", "-", stdin_data: png)
+
+  abort "Couldn't run feh!" unless status.success?
+end
