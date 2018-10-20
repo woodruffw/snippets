@@ -7,5 +7,9 @@ set -eo pipefail
 [[ -n "${EDITOR}" ]] || { >&2 echo "Refusing to continue without EDITOR."; exit; }
 
 current=$(git rev-parse --abbrev-ref HEAD)
+base=${1:-master}
+merge_base=$(git merge-base "${current}" "${base}")
 
-git diff --name-only "${current}" "$(git merge-base "${current}" master)" | xargs "${EDITOR}"
+# TODO: Instead of filtering renamed files, open their new path.
+git diff -z --diff-filter "r" --name-only "${current}" "${merge_base}" \
+    | xargs -0 "${EDITOR}"
