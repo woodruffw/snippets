@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+
+# ffdtmf: Generate a sequence of DTMF tones corresponding to the given number.
+
+set -eo pipefail
+
+# Feel free to override these; DUR controls tone duration, GAP is gap between tones.
+DUR="${DUR:-0.225}"
+GAP="${GAP:-0.15}"
+
+declare -A tone_map
+tone_map=(
+    ['1']="697 1209"
+    ['2']="697 1336"
+    ['3']="697 1477"
+    ['A']="697 1633"
+    ['4']="770 1209"
+    ['5']="770 1336"
+    ['6']="770 1477"
+    ['B']="770 1633"
+    ['7']="852 1209"
+    ['8']="852 1336"
+    ['9']="852 1477"
+    ['C']="852 1633"
+    ['*']="941 1209"
+    ['0']="941 1336"
+    ['#']="941 1477"
+    ['D']="941 1633"
+)
+
+function help {
+    echo "Usage: ffdtmf <number> <output>"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+function cleanup {
+    rm -f "${tonea}"
+    rm -f "${toneb}"
+    rm -f "${comps[@]}"
+    rm -f "${concat}"
+}
+
+trap cleanup EXIT
+
+tonea=$(mktemp -u ffdialtone-tonea-XXXXX.wav)
+toneb=$(mktemp -u ffdialtone-toneb-XXXXX.wav)
+quiet=$(mktemp -u ffdialtone-quiet-XXXXX.wav)
+comps=()
+
+[[ $# -eq 2 && ! -f $2 ]] || help
+[[ $1 =~ [0-9A-D#*]+ ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+ffmpeg -f lavfi -i anullsrc -t "${GAP}" "${quiet}"
+
+for (( i = 0; i < "${#1}"; i++ )); do
+    digit="${1:${i}:1}"
+    freqs=(${tone_map["${digit}"]})
+
+    ffmpeg -y -f lavfi -i "sine=frequency=${freqs[0]}:duration=${DUR}" -af "volume=-13dB" "${tonea}"
+    ffmpeg -y -f lavfi -i "sine=frequency=${freqs[1]}:duration=${DUR}" -af "volume=-13dB" "${toneb}"
+
+    comp=$(mktemp -u ffdialtone-comp-XXXXX.wav)
+    comps+=("${comp}" "${quiet}")
+
+    ffmpeg -i "${tonea}" -i "${toneb}" -filter_complex "amix=inputs=2:duration=first" "${comp}"
+done
+
+concat=$(mktemp -u ffdialtone-concat-XXXXX.txt)
+
+for comp in "${comps[@]}"; do
+    echo "file '${comp}'" >> "${concat}"
+done
+
+ffmpeg -f concat -i "${concat}" -c copy "${2}"
