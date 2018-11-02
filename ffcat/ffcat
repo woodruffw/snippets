@@ -38,4 +38,4 @@ done
 installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
 
 # you'd better hope your stream supports the `copy' encoder
-ffmpeg -f concat -i "${inputs_file}" -c copy "${output}"
+ffmpeg -f concat -safe 0 -i "${inputs_file}" -c copy "${output}"
