@@ -10,22 +10,22 @@ GAP="${GAP:-0.15}"
 
 declare -A tone_map
 tone_map=(
-    ['1']="697 1209"
-    ['2']="697 1336"
-    ['3']="697 1477"
-    ['A']="697 1633"
-    ['4']="770 1209"
-    ['5']="770 1336"
-    ['6']="770 1477"
-    ['B']="770 1633"
-    ['7']="852 1209"
-    ['8']="852 1336"
-    ['9']="852 1477"
-    ['C']="852 1633"
-    ['*']="941 1209"
-    ['0']="941 1336"
-    ['#']="941 1477"
-    ['D']="941 1633"
+  ['1']="697 1209"
+  ['2']="697 1336"
+  ['3']="697 1477"
+  ['A']="697 1633"
+  ['4']="770 1209"
+  ['5']="770 1336"
+  ['6']="770 1477"
+  ['B']="770 1633"
+  ['7']="852 1209"
+  ['8']="852 1336"
+  ['9']="852 1477"
+  ['C']="852 1633"
+  ['*']="941 1209"
+  ['0']="941 1336"
+  ['#']="941 1477"
+  ['D']="941 1633"
 )
 
 # Cache our generated DTMFs, so that we don't have to rebuild
@@ -33,23 +33,23 @@ tone_map=(
 declare -A tone_cache
 
 function help {
-    echo "Usage: ffdtmf <number> <output>"
-    exit
+  echo "Usage: ffdtmf <number> <output>"
+  exit
 }
 
 function installed {
-    cmd=$(command -v "${1}")
+  cmd=$(command -v "${1}")
 
-    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
-    return ${?}
+  [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+  return ${?}
 }
 
 function cleanup {
-    rm -f "${tonea}"
-    rm -f "${toneb}"
-    rm -f "${quiet}"
-    rm -f "${tone_cache[@]}"
-    rm -f "${concat}"
+  rm -f "${tonea}"
+  rm -f "${toneb}"
+  rm -f "${quiet}"
+  rm -f "${tone_cache[@]}"
+  rm -f "${concat}"
 }
 
 trap cleanup EXIT
@@ -66,28 +66,28 @@ installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
 ffmpeg -f lavfi -i anullsrc -t "${GAP}" "${quiet}"
 
 for (( i = 0; i < "${#1}"; i++ )); do
-    digit="${1:${i}:1}"
-    freqs=(${tone_map["${digit}"]})
+  digit="${1:${i}:1}"
+  freqs=(${tone_map["${digit}"]})
 
-    if [[ -z "${tone_cache[${digit}]}" ]]; then
-        ffmpeg -y -f lavfi -i "sine=frequency=${freqs[0]}:duration=${DUR}" -af "volume=-13dB" "${tonea}"
-        ffmpeg -y -f lavfi -i "sine=frequency=${freqs[1]}:duration=${DUR}" -af "volume=-13dB" "${toneb}"
-        comp=$(mktemp -u ffdialtone-comp-XXXXX.wav)
+  if [[ -z "${tone_cache[${digit}]}" ]]; then
+    ffmpeg -y -f lavfi -i "sine=frequency=${freqs[0]}:duration=${DUR}" -af "volume=-13dB" "${tonea}"
+    ffmpeg -y -f lavfi -i "sine=frequency=${freqs[1]}:duration=${DUR}" -af "volume=-13dB" "${toneb}"
+    comp=$(mktemp -u ffdialtone-comp-XXXXX.wav)
 
-        ffmpeg -i "${tonea}" -i "${toneb}" -filter_complex "amix=inputs=2:duration=first" "${comp}"
+    ffmpeg -i "${tonea}" -i "${toneb}" -filter_complex "amix=inputs=2:duration=first" "${comp}"
 
-        tone_cache["${digit}"]="${comp}"
-    else
-        comp="${tone_cache[${digit}]}"
-    fi
+    tone_cache["${digit}"]="${comp}"
+  else
+    comp="${tone_cache[${digit}]}"
+  fi
 
-    comps+=("${comp}" "${quiet}")
+  comps+=("${comp}" "${quiet}")
 done
 
 concat=$(mktemp -u ffdialtone-concat-XXXXX.txt)
 
 for comp in "${comps[@]}"; do
-    echo "file '${comp}'" >> "${concat}"
+  echo "file '${comp}'" >> "${concat}"
 done
 
 ffmpeg -f concat -i "${concat}" -c copy "${2}"
