@@ -28,6 +28,10 @@ tone_map=(
     ['D']="941 1633"
 )
 
+# Cache our generated DTMFs, so that we don't have to rebuild
+# them on every duplicated number.
+declare -A tone_cache
+
 function help {
     echo "Usage: ffdtmf <number> <output>"
     exit
@@ -43,7 +47,8 @@ function installed {
 function cleanup {
     rm -f "${tonea}"
     rm -f "${toneb}"
-    rm -f "${comps[@]}"
+    rm -f "${quiet}"
+    rm -f "${tone_cache[@]}"
     rm -f "${concat}"
 }
 
@@ -64,13 +69,19 @@ for (( i = 0; i < "${#1}"; i++ )); do
     digit="${1:${i}:1}"
     freqs=(${tone_map["${digit}"]})
 
-    ffmpeg -y -f lavfi -i "sine=frequency=${freqs[0]}:duration=${DUR}" -af "volume=-13dB" "${tonea}"
-    ffmpeg -y -f lavfi -i "sine=frequency=${freqs[1]}:duration=${DUR}" -af "volume=-13dB" "${toneb}"
+    if [[ -z "${tone_cache[${digit}]}" ]]; then
+        ffmpeg -y -f lavfi -i "sine=frequency=${freqs[0]}:duration=${DUR}" -af "volume=-13dB" "${tonea}"
+        ffmpeg -y -f lavfi -i "sine=frequency=${freqs[1]}:duration=${DUR}" -af "volume=-13dB" "${toneb}"
+        comp=$(mktemp -u ffdialtone-comp-XXXXX.wav)
 
-    comp=$(mktemp -u ffdialtone-comp-XXXXX.wav)
+        ffmpeg -i "${tonea}" -i "${toneb}" -filter_complex "amix=inputs=2:duration=first" "${comp}"
+
+        tone_cache["${digit}"]="${comp}"
+    else
+        comp="${tone_cache[${digit}]}"
+    fi
+
     comps+=("${comp}" "${quiet}")
-
-    ffmpeg -i "${tonea}" -i "${toneb}" -filter_complex "amix=inputs=2:duration=first" "${comp}"
 done
 
 concat=$(mktemp -u ffdialtone-concat-XXXXX.txt)
