@@ -4,6 +4,9 @@
 
 set -eo pipefail
 
+SCALE="${SCALE:-sqrt}"
+DIM="${DIM:-1920x1080}"
+
 function help {
   echo "Usage: ffspectrum <input> <output>"
   exit
@@ -20,5 +23,5 @@ function installed {
 installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
 
 ffmpeg -i "${1}" -filter_complex \
-  "[0:a]showspectrum=s=1920x1080:mode=combined:color=intensity:scale=log:saturation=0.2[v]" \
+  "[0:a]showspectrum=s=${DIM}:mode=combined:color=intensity:scale=${SCALE}[v]" \
   -map "[v]" -map 0:a "${2}"
