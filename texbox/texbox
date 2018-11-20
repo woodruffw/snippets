@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+# texbox: render a snippet of latex within a box
+
+# notes:
+#   * might not work when all lines are the same length
+
+# experimentally, 5inx5in with a margin of 0.2in works well
+# fiddle with these if your text renders incorrectly
+DIM="${DIM:-5}"
+MAR="${MAR:-0.2}"
+
+while read -r line; do
+  line="\\texttt{${line}}"
+  snippet="${snippet}\\begin{center}\\resizebox*{\\textwidth}{\\textheight}{${line}}\\end{center}"
+done
+
+cwd=$(pwd)
+stage=$(mktemp -d)
+trap 'cd ${cwd}; rm -rf ${stage}' INT TERM EXIT
+cd "${stage}" || exit
+
+# there's a lot of magic going on here, but in short:
+# we create a square page using the minimal doc class + geometry package
+# we do some stuff to stop latex from adding its normal vertical spacing
+# we insert our snippet, which is one or more lines that have been centered and maximized
+# we tell latex to pad the rest of the vertical space out
+cat > box.tex <<-EOTEX
+\documentclass{minimal}
+\usepackage[paperheight=${DIM}in,paperwidth=${DIM}in,margin=${MAR}in]{geometry}
+\usepackage{graphicx}
+\setkeys{Gin}{keepaspectratio}
+\begin{document}
+\topskip0pt
+\vspace*{\fill}
+${snippet}
+\vspace*{\fill}
+\end{document}
+EOTEX
+
+cat box.tex
+
+pdflatex box.tex
+mv box.pdf "${cwd}"
