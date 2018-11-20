@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+# ffspectrum: Create a spectrograph video from an audio clip
+
+set -eo pipefail
+
+function help {
+  echo "Usage: ffspectrum <input> <output>"
+  exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 2 && -f $1 && ! -f $2 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+ffmpeg -i "${1}" -filter_complex \
+  "[0:a]showspectrum=s=1920x1080:mode=combined:color=intensity:scale=log:saturation=0.2[v]" \
+  -map "[v]" -map 0:a "${2}"
