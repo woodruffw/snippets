@@ -38,7 +38,5 @@ ${snippet}
 \end{document}
 EOTEX
 
-cat box.tex
-
 pdflatex box.tex
 mv box.pdf "${cwd}"
