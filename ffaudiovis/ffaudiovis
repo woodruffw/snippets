@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# ffaudiovis: Create a video containing a few visualizations for an audio clip
+
+set -eo pipefail
+
+function help {
+  echo "Usage: ffaudiovis <input> <output>"
+  exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 2 && -f $1 && ! -f $2 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+ffmpeg -i "${1}" -filter_complex \
+  "[0:a]showfreqs=s=960x778,pad=1920:1080[sf]; \
+   [0:a]showspectrum=mode=separate:color=intensity:scale=sqrt:s=960x778[ss]; \
+   [0:a]showwaves=s=1920x302:mode=line[sw]; \
+   [sf][ss]overlay=w[bg]; \
+   [bg][sw]overlay=0:H-h[v]" \
+  -map "[v]" -map 0:a "${2}"
