@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+# ffspin: Create a spinning animation of a still image.
+
+set -eo pipefail
+
+INCREMENT=15
+FRAMERATE=25
+
+function help {
+  echo "Usage: ffspin <input> <output>"
+  exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 2 && -f $1 && ! -f $2 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf "${tmpdir}"' exit
+
+for (( i = 0; i < 360; i+=INCREMENT )); do
+  ffmpeg -i "${1}" -pix_fmt rgb8 -vf "rotate=${i}*PI/180" "${tmpdir}/${i}.gif"
+done
+
+frames=($(find "${tmpdir}" -type f | sort -V))
+
+for frame in "${frames[@]}"; do
+  echo "file '${frame}'" >> "${tmpdir}/frames.txt"
+done
+
+ffmpeg -r "${FRAMERATE}" -f concat -safe 0 -i "${tmpdir}/frames.txt" "${2}"
