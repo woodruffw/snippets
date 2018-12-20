@@ -6,12 +6,16 @@
 require "optparse"
 require "uri"
 
-options = {}
+options = { urlonly: false }
 OptionParser.new do |opts|
   opts.banner = "Usage: urlgrep [options] [FILE ...]"
 
   opts.on "-p", "--protocols PROTOS", Array do |protos|
     options[:protos] = protos
+  end
+
+  opts.on "-u", "--[no-]url-only" do |urlonly|
+    options[:urlonly] = urlonly
   end
 end.parse!
 
@@ -19,8 +23,12 @@ pattern = URI.regexp options[:protos]
 no_match = true
 
 ARGF.each_line do |line|
-  if line.match? pattern
-    puts line
+  line.match pattern do |m|
+    if options[:urlonly]
+      puts m[0]
+    else
+      puts line
+    end
     no_match = false
   end
 end
