@@ -2,6 +2,8 @@
 
 # git-move-commits: move the last N commits on the current branch to another branch
 
+set -eo pipefail
+
 usage() {
     echo "usage: git move-commits <branch> [# of commits]"
     exit
