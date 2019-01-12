@@ -2,6 +2,8 @@
 
 # git-fetch-pr: fetch a pull request and check it out as a branch
 
+set -eo pipefail
+
 usage() {
 	echo "usage: git fetch-pr <pr #>"
 	exit
