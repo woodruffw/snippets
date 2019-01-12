@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# git-takeout: take one or more files out of the last commit
+
+set -eo pipefail
+
+usage() {
+  echo "usage: git takeout <file> [file ...]"
+  exit
+}
+
+[[ -z "${1}" ]] && usage
+
+git reset --soft HEAD^
+git reset HEAD -- "${@}"
+git commit -c ORIG_HEAD
