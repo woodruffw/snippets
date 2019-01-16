@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# git-clang-format-changed: Run clang-format on any changed C/C++ files.
+# This bears a great deal of resemblance to git-clang-format, which
+# I don't always have on my systems.
+
+set -eo pipefail
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+installed git || { >&2 echo "Missing git"; exit 1; }
+installed clang-format || { >&2 echo "Missing clang-format"; exit 1; }
+
+git status --porcelain \
+    | sed s/^...// \
+    | grep -E '\.(c|cpp|cxx|h|hpp|hxx)$' \
+    | xargs clang-format -i -style=file -verbose
