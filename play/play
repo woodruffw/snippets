@@ -8,26 +8,26 @@
 #	This code is licensed by William Woodruff under the MIT License.
 #	http://opensource.org/licenses/MIT
 
-function usage() {
-	printf "Usage: $(basename ${0}) <file or URL>\n"
+function usage {
+	echo "Usage: $(basename "${0}") <file or URL>"
 	exit 1
 }
 
 function fatal {
-	>&2 printf "Fatal: ${*}. Exiting.\n"
+	>&2 echo "Fatal: ${*}. Exiting."
 	exit 2
 }
 
 function warn {
-	>&2 printf "Warning: ${*}.\n"
+	>&2 echo "Warning: ${*}."
 }
 
 function info {
-	printf "Info: ${*}.\n"
+	echo "Info: ${*}."
 }
 
 function installed {
-	local cmd=$(command -v "${1}")
+	cmd=$(command -v "${1}")
 
 	[[ -n  "${cmd}" ]] && [[ -f "${cmd}" ]]
 	return ${?}
