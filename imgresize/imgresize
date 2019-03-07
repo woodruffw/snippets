@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# imgresize: scale an image by a given percentage
+
+set -eo pipefail
+
+function help {
+  echo "Usage: imgresize <input> [scale%] [output]"
+  echo "Example: imgresize foo.jpg 50 half_foo.jpg"
+  exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+installed convert || { >&2 echo "Missing convert."; exit 1; }
+
+input="${1}"
+
+[[ -f "${input}" ]] || help
+
+scale="${2:-50}"
+output="${3:-$(dirname "${input}")/${scale}_$(basename "${input}")}"
+
+convert "${input}" -resize "${scale}%" "${output}"
