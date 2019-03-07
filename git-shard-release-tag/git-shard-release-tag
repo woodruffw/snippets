@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# git-shard-release-tag: Create a git tag for a Crystal shard's version.
+
+def act(cmd)
+  if ARGV.include? "--dry-run"
+    puts cmd
+  else
+    system cmd
+  end
+end
+
+abort("No shard.yml?") unless File.exist?("shard.yml")
+
+version = `shards version`.chomp
+version = "v#{version}" unless version.start_with?("v")
+tags = `git tag`.split
+
+abort("Did you forget to bump your version?") if tags.include?(version)
+
+act "git tag #{version}"
+act "git push origin #{version}"
