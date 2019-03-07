@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 
-#	rip.sh
-#   Author: William Woodruff
-#   ------------------------
-#	Quick rip an audio CD into a specified format using abcde.
-#	Requires abcde for ripping, flac/lame for encoding.
-#   ------------------------
-#   This code is licensed by William Woodruff under the MIT License.
-#   http://opensource.org/licenses/MIT
+# rip: quick rip an audio CD into a specified format using abcde
 
 function installed() {
 	cmd=$(command -v "${1}")
