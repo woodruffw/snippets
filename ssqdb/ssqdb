@@ -21,7 +21,7 @@ require "erb"
 require "cgi"
 require "json"
 
-VERSION = 9
+VERSION = 10
 
 GENERATED_AT = Time.now.to_i
 
@@ -67,6 +67,14 @@ CSS = <<~CSS
     background-color: #e0e0e0;
     padding-bottom: 0.1em;
     margin-bottom: -0.5em;
+  }
+
+  .left {
+    float: left;
+  }
+
+  .right {
+    float: right;
   }
 CSS
 
@@ -114,10 +122,17 @@ HEADER = <<~HEADER
       <script src="ssqdb.js" defer></script>
     </head>
     <body>
-      <a href="index.html">all</a> /
-      <a href="#" id="random-quote">random</a> /
-      <a href="quotes.db">db</a> /
-      <a href="about.html">about</a>
+      <div class="left">
+        <a href="index.html">all</a> /
+        <a href="#" id="random-quote">random</a> /
+        <a href="quotes.db">db</a> /
+        <a href="about.html">about</a>
+      </div>
+      <div class="right">
+        <a href="/">home</a>
+      </div>
+
+      <br>
 HEADER
 
 FOOTER = <<~FOOTER
