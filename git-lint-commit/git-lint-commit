@@ -58,6 +58,9 @@ if subject
 
   words = subject.split
   w 1, "Subject line suspiciously brief (#{words.size} < 5)" if words.size < 5
+
+  # TODO: Warn if subject line isn't capitalized after the first colon.
+  # e.g.: `foo: Frobulate the bar` is good, `foo: frobulate the bar` is bad.
 end
 
 # don't bother linting the body if it's empty
