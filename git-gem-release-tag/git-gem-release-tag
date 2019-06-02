@@ -4,11 +4,11 @@
 # git-gem-release-tag: Create a git tag for a Ruby namespace's version,
 #  build a new gem for that tag, and push that gem to Rubygems.
 
-def act(s)
+def act(cmd)
   if ARGV.include? "--dry-run"
-    puts s
+    puts cmd
   else
-    system s
+    system cmd
   end
 end
 
@@ -19,7 +19,11 @@ abort("You have more than one gemspec, giving up.") if gemspec_candidates.size >
 
 gemspec = gemspec_candidates.first
 
-act "gem build #{gemspec}"
+if Dir.exist?("vendor/bundle")
+  act "bundle exec gem build #{gemspec}"
+else
+  act "gem build #{gemspec}"
+end
 
 gemfile_candidates = Dir[File.join(`pwd`.chomp, "*.gem")]
 
