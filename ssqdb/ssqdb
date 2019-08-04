@@ -21,7 +21,7 @@ require "erb"
 require "cgi"
 require "json"
 
-VERSION = 10
+VERSION = 11
 
 GENERATED_AT = Time.now.to_i
 
@@ -144,7 +144,7 @@ QUOTE = <<~QUOTE
   <div class="quote">
   <h5 class="quote-header">
     quote #<%= index %>
-    <a class="quote-link" href="quote<%= index %>.html">(&rarr;)</a>
+    <a class="quote-link" href="quote<%= index %>.html">(permalink)</a>
     <a class="quote-link" href="#" id="urlify-btn">(urls)</a>
     <% if opts[:json] %>
       <a class="quote-link" href="quote<%= index %>.json">(json)</a>
