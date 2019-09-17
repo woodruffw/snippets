@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+# git-unws: remove whitespace changes from the unstaged tree
+
+# https://til.hashrocket.com/posts/696df00135-remove-whitespace-changes-then-git-add-p
+git diff -w --no-color \
+  | git apply --cached --ignore-whitespace \
+  && git checkout -- . \
+  && git reset \
+  && git add -p
