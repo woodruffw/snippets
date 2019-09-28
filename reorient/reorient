@@ -1,0 +1,54 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# reorient: extract and remove orientation tags from images while rotating
+
+require "json"
+require "open3"
+
+ORIENTATION_MAP = {
+  2 => %w[-flip horizontal],
+  3 => %w[-rotate 180],
+  4 => %w[-flip vertical],
+  5 => %w[-transpose],
+  6 => %w[-rotate 90],
+  7 => %w[-transverse],
+  8 => %w[-rotate 270],
+}.freeze
+
+def run!(*args)
+  STDERR.puts "[+] #{args.join(" ")}" if ENV["VERBOSE"]
+  output, status = Open3.capture2(*args)
+  abort "[!] Fatal: Couldn't run #{args.first}" unless status.success?
+  output
+end
+
+abort "Usage: reorient <file> [file ...]" if ARGV.empty?
+
+json = run! "exiftool", "-Orientation", "-n", "-json", *ARGV
+
+JSON.parse(json).tap do |d|
+  d.each do |obj|
+    filename = obj["SourceFile"]
+    orientation = obj["Orientation"]
+
+    case orientation
+    when nil
+      STDERR.puts "[!] #{filename} has no orientation information, skipping"
+      next
+    when 1
+      next
+    else
+      orientation_flags = ORIENTATION_MAP[orientation]
+      unless orientation_flags
+        STDERR.puts "[!] Unknown orientation value (#{orientation}) for #{filename}"
+        next
+      end
+
+      # TODO(ww): Might be worthwhile to check whether we're operating on a JPEG
+      # here and use jpegtran instead.
+      run! "convert", filename, "-quality", "100", *orientation_flags, filename
+      run! "exiftool", "-Orientation=", "-overwrite_original", filename
+    end
+  end
+end
