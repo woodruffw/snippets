@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+# git-dwtb: "done with this branch":
+#  * check back out to master
+#  * pull "${REMOTE}"/master
+#  * delete the original branch
+#  * prune "${REMOTE}"
+
+set -eo pipefail
+
+remote="${REMOTE:-origin}"
+branchname=$(git rev-parse --abbrev-ref HEAD)
+
+if [[ "${branchname}" == "master" || "${branchname}" == "HEAD" ]]; then
+  >&2 echo "Don't run me on master or a symbolic ref!"
+  exit 1
+fi
+
+git checkout master
+git pull "${remote}" master
+git branch -D "${branchname}"
+git remote prune "${remote}"
