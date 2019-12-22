@@ -16,7 +16,7 @@ if [[ "${branchname}" == "master" || "${branchname}" == "HEAD" ]]; then
   exit 1
 fi
 
-git checkout master
-git pull "${remote}" master
-git branch -D "${branchname}"
-git remote prune "${remote}"
+git checkout master && \
+  git pull "${remote}" master && \
+  git branch -D "${branchname}" && \
+  git remote prune "${remote}"
