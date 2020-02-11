@@ -1,0 +1,131 @@
+#!/usr/bin/env python3
+
+# citibike-export: Export the ride history for a CitiBike account in JSON format.
+
+import argparse
+import json
+import os
+import sys
+
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support.expected_conditions import visibility_of
+
+
+RECORD_MAP = {
+    "start_date": ".ed-html-table__item__info__sub-info_trip-start-date",
+    "start_station": ".ed-html-table__item__info__sub-info_trip-start-station",
+    "end_date": ".ed-html-table__item__info__sub-info_trip-end-date",
+    "end_station": ".ed-html-table__item__info__sub-info_trip-end-station",
+    "duration": ".ed-html-table__col_trip-duration",
+    "cost": ".ed-html-table__col_trip-cost",
+    "bike_angel_points": ".ed-html-table__col_baPoints",
+}
+
+
+def vlog(msg):
+    print(f"[+] {msg}", file=sys.stderr)
+
+
+def login(browser, username, password):
+    vlog("Logging in, be patient...")
+
+    wait = WebDriverWait(browser, 10)
+    browser.get("https://member.citibikenyc.com/profile/login")
+
+    username_elem = browser.find_element_by_id("ed-popup-form_login__username_secondLogin")
+    wait.until(visibility_of(username_elem))
+    username_elem.clear()
+    username_elem.send_keys(username)
+
+    password_elem = browser.find_element_by_id("ed-popup-form_login__password_secondLogin")
+    password_elem.clear()
+    password_elem.send_keys(password)
+
+    submit = browser.find_element_by_css_selector("button[type='submit']")
+    submit.click()
+
+    vlog(f"Logged in, now at: {browser.current_url}")
+
+
+def export_page(browser, output):
+    vlog(f"Exporting page: {browser.current_url}")
+
+    table = browser.find_element_by_css_selector("table.ed-html-table_trip")
+    table_body = table.find_element_by_tag_name("tbody")
+    rows = table_body.find_elements_by_tag_name("tr")
+    for row in rows:
+        record = {
+            key: row.find_element_by_css_selector(value).text
+            for key, value in RECORD_MAP.items()
+        }
+        yield record
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Export a user's CitiBike ride history")
+    parser.add_argument(
+        "-u",
+        "--username",
+        type=str,
+        default=os.getenv("CITIBIKE_USERNAME"),
+        help="The username (or email) to log in with",
+    )
+    parser.add_argument(
+        "-p",
+        "--password",
+        type=str,
+        default=os.getenv("CITIBIKE_PASSWORD"),
+        help="The password to log in with",
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=argparse.FileType("w"),
+        default=sys.stdout,
+        help="The file to write the export to",
+    )
+    parser.add_argument(
+        "-H",
+        "--headless",
+        action="store_true",
+        help="Run Firefox in headless mode"
+    )
+    args = parser.parse_args()
+
+    vlog("Starting the webdriver...")
+
+    export = []
+    options = Options()
+    options.headless = args.headless
+    with webdriver.Firefox(options=options, service_log_path=os.devnull) as browser:
+        login(browser, args.username, args.password)
+        return
+
+        trip_links = browser.find_elements_by_link_text("Trips")
+        if len(trip_links) != 1:
+            vlog(f"Barf: Expected exactly one trip link, found {len(trip_links)}")
+            sys.exit(1)
+
+        trip_links[0].click()
+
+        page_count = 0
+        while True:
+            export += list(export_page(browser, args.output))
+            page_count += 1
+
+            next_page = browser.find_element_by_css_selector(
+                "a.ed-paginated-navigation__pages-group__link_next.ed-paginated-navigation__pages-group__link"
+            )
+            if "disabled" in next_page.get_attribute("class"):
+                vlog(f"Looks like {page_count} is the last page!")
+                break
+
+            next_page.click()
+
+    print(json.dumps(export), file=args.output)
+
+
+if __name__ == "__main__":
+    main()
