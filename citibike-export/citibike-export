@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# citibike-export: Export the ride history for a CitiBike account in JSON format.
+# citibike-export: Export the ride history for a Citi Bike account in JSON format.
 
 import argparse
 import json
@@ -64,7 +64,7 @@ def export_page(browser, output):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Export a user's CitiBike ride history")
+    parser = argparse.ArgumentParser(description="Export a user's Citi Bike ride history")
     parser.add_argument(
         "-u",
         "--username",
