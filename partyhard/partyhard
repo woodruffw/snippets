@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+# partyhard: Create a hard-partying version of an image.
+
+set -eo pipefail
+
+function help {
+  echo "Usage: partyhard <input> <output>"
+  exit
+}
+
+function installed {
+  cmd=$(command -v "${1}")
+
+  [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+  return ${?}
+}
+
+[[ $# -eq 2 && -f $1 && ! -f $2 ]] || help
+installed convert || { >&2 echo "Missing convert."; exit 1; }
+
+tmpdir=$(mktemp -d)
+trap 'rm -rf "${tmpdir}"' exit
+
+convert "${1}" -fill red -colorize 50% "${tmpdir}/red.png"
+convert "${1}" -fill green -colorize 50% "${tmpdir}/green.png"
+convert "${1}" -fill blue -colorize 50% "${tmpdir}/blue.png"
+
+convert -delay 20 -loop 0 "${tmpdir}/red.png" "${tmpdir}/green.png" "${tmpdir}/blue.png" "${2}"
