@@ -6,7 +6,7 @@ set -eo pipefail
 
 # By default, assume subtitles are baked into the input.
 # Users can override this to use an external subtitle file.
-SUB_FILE="${1}"
+SUB_FILE="${SUB_FILE:-${1}}"
 
 function help {
   echo "Usage: ffsubshot <input> <timestamp> <output>"
