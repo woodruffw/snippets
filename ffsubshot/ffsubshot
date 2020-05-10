@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# ffsubshot: Take a screenshot at the given timestamp, with subtitles.
+
+set -eo pipefail
+
+# By default, assume subtitles are baked into the input.
+# Users can override this to use an external subtitle file.
+SUB_FILE="${1}"
+
+function help {
+  echo "Usage: ffsubshot <input> <timestamp> <output>"
+  exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 3 && -f $1 && -n $2 && ! -f $3 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+ffmpeg -ss "${2}" -copyts \
+  -i "${1}" -vf subtitles="${SUB_FILE}" \
+  -vframes 1 "${3}"
