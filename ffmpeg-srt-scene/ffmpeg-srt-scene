@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+
+# ffmpeg-srt-scene: Given a scene index, render that scene with the subtitles baked in.
+
+import argparse
+import math
+import pathlib
+import subprocess
+import sys
+
+import srt
+
+
+def eprint(msg):
+    print(f"Fatal: {msg}", file=sys.stderr)
+    sys.exit(1)
+
+
+def timestamp(delta):
+    (hours, rem) = divmod(delta.total_seconds(), 3600)
+    (minutes, seconds) = divmod(rem, 60)
+    (millis, seconds) = math.modf(seconds)
+
+    return f"{int(hours):02d}:{int(minutes):02d}:{int(seconds):02d}.{int(millis * 1000):03d}"
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Render a scene with baked-in subtitles, using its SRT index"
+    )
+    parser.add_argument("input", type=pathlib.Path, help="The input video")
+    parser.add_argument(
+        "srt", type=pathlib.Path, help="The SRT file to index from",
+    )
+    parser.add_argument("index", type=int, help="The scene index")
+    parser.add_argument("output", type=pathlib.Path, help="The output")
+    options = parser.parse_args()
+
+    sub = list(srt.parse(options.srt.read_text()))[options.index - 1]
+
+    start_ts = timestamp(sub.start)
+    end_ts = timestamp(sub.end)
+
+    subprocess.run(
+        [
+            "ffmpeg",
+            "-i",
+            options.input,
+            "-vf",
+            f"subtitles={options.srt}",
+            "-copyts",
+            "-ss",
+            start_ts,
+            "-to",
+            end_ts,
+            options.output,
+        ]
+    )
+
+
+if __name__ == "__main__":
+    main()
