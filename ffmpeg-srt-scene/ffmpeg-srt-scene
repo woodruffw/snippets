@@ -6,14 +6,8 @@ import argparse
 import math
 import pathlib
 import subprocess
-import sys
 
 import srt
-
-
-def eprint(msg):
-    print(f"Fatal: {msg}", file=sys.stderr)
-    sys.exit(1)
 
 
 def timestamp(delta):
