@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# ffframes: Extract the frames from a video, at the specified rate
+
+set -eo pipefail
+
+function help {
+  echo "Usage: ffsubshot <input> <rate> <output-dir>"
+  exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 3 && -f $1 && -n $2 && ! -e $3 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+mkdir -p "${3}"
+ffmpeg -i "${1}" -vf fps="${2}" "${3}/frame-%05d.bmp"
