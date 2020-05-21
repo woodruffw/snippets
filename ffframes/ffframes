@@ -5,7 +5,7 @@
 set -eo pipefail
 
 function help {
-  echo "Usage: ffsubshot <input> <rate> <output-dir>"
+  echo "Usage: ffframes <input> <rate> <output-dir>"
   exit
 }
 
