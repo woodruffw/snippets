@@ -6,6 +6,13 @@
 
 require "json"
 
+VBNLA_CONFIG = File.expand_path "~/.config/vbnla"
+IGNORE_PATTERNS = if File.exist?(VBNLA_CONFIG)
+                    File.readlines(VBNLA_CONFIG).map(&:chomp!)
+                  else
+                    []
+                  end
+
 LOGFORMAT = %r{
   (?<ip>.+)
   \s
@@ -24,7 +31,11 @@ LOGFORMAT = %r{
   \"(?<ref>.*)\"
   \s
   \"(?<ua>.*)\"
-}x
+}x.freeze
+
+def top10_pretty(hist)
+  hist.to_a.max_by(10, &:last).map { |e| "#{e[0]} -> #{e[1]}" }.join("\n\t")
+end
 
 hist = Hash.new { |hash, key| hash[key] = Hash.new(0) }
 lines = 1
@@ -38,15 +49,18 @@ STDIN.each_line do |line|
   end
 end
 
+# Filter out any request paths that match IGNORE_PATTERNS.
+hist["req"].reject! { |req| IGNORE_PATTERNS.any? { |pat| File.fnmatch?(pat, req) } }
+
 puts <<~SUMMARY
   Total requests: #{lines}
   Unique IPs: #{hist["ip"].size}
   Top 10 IPs:
-  \t#{hist["ip"].to_a.max_by(10, &:last).map { |e| "#{e[0]} -> #{e[1]}" }.join("\n\t")}
+  \t#{top10_pretty hist["ip"]}
 
   Top 10 UAs:
-  \t#{hist["ua"].to_a.max_by(10, &:last).map { |e| "#{e[0]} -> #{e[1]}" }.join("\n\t")}
+  \t#{top10_pretty hist["ua"]}
 
   Top 10 requests:
-  \t#{hist["req"].to_a.max_by(10, &:last).map { |e| "#{e[0]} -> #{e[1]}" }.join("\n\t")}
+  \t#{top10_pretty hist["req"]}
 SUMMARY
