@@ -63,4 +63,7 @@ puts <<~SUMMARY
 
   Top 10 requests:
   \t#{top10_pretty hist["req"]}
+
+  Top 10 referrers:
+  \t#{top10_pretty hist["ref"]}
 SUMMARY
