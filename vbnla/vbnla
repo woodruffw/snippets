@@ -15,7 +15,7 @@ LOGFORMAT = %r{
   \s
   \[(?<time>.+)\]
   \s
-  \"(?<req>.+)\"
+  \"(?<method>\S+)\s(?<req>\S+)\s(?<proto>\S+)\"
   \s
   (?<stat>\d{3})
   \s
@@ -31,9 +31,7 @@ lines = 1
 
 STDIN.each_line do |line|
   lines += 1
-  # I'd use MatchData#named_captures here,
-  # but my server is still on Ruby 2.3.
-  hsh = LOGFORMAT.names.zip(LOGFORMAT.match(line).captures).to_h rescue next
+  hsh = LOGFORMAT.match(line).named_captures rescue next
 
   hsh.each do |k, v|
     hist[k][v] += 1
