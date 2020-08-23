@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# ffbake: Bake a subtitle stream into the main video stream
+
+set -eo pipefail
+
+# By default, assume that the subtitle stream that we want to bake is the first
+# subtitle stream. Users can override this to use a different stream index.
+STREAM_ID="${STREAM_ID:-0}"
+
+function help {
+  echo "Usage: ffbake <input> <output>"
+  exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -eq 2 && -f $1 && ! -f $2 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+
+ffmpeg -i "${1}" \
+  -filter_complex "[0:v][0:s:${STREAM_ID}]overlay[v]" \
+  -map "[v]" -map "0:a" \
+  "${2}"
