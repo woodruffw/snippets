@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+# docker-shellin: use `selecta` to select a running docker container and `docker exec`
+# to spawn an interactive shell in it.
+
+set -euo pipefail
+
+function die {
+  echo "Error: $*" >&2
+  exit 1
+}
+
+function installed {
+  cmd=$(command -v "${1}")
+
+  [[ -n  "${cmd}" ]] && [[ -f "${cmd}" ]]
+  return ${?}
+}
+
+CONTAINER_SHELL="${CONTAINER_SHELL:-bash}"
+
+installed selecta || die "Requires selecta"
+installed docker || die "Requires docker"
+
+images=$(docker ps --format "{{.ID}} {{.Image}}")
+image=$(selecta <<< "${images}" | awk '{ print $1 }')
+
+[[ -n "${image}" ]] && docker exec -it "${image}" "${CONTAINER_SHELL}"
