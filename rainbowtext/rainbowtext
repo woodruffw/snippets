@@ -1,0 +1,121 @@
+#!/usr/bin/env python3
+
+# rainbowtext: render some rainbow text
+
+import argparse
+import itertools
+from pathlib import Path
+import platform
+import shlex
+import subprocess
+
+_LIGHT_ROYGBIV = {
+    "red": "#FF0000",
+    "orange": "#FFA500",
+    "yellow": "#FFFF00",
+    "green": "#00FF00",
+    "blue": "#0000FF",
+    "indigo": "#B57EDC",
+    "violet": "#EE82EE",
+}
+
+_DARK_ROYGBIV = {
+    "red": "#AA1100",
+    "orange": "#FF4400",
+    "yellow": "#FFBB11",
+    "green": "#55AA00",
+    "blue": "#000055",
+    "indigo": "#310062",
+    "violet": "#4B0082",
+}
+
+_THEME_MAP = {
+    "light": _LIGHT_ROYGBIV,
+    "dark": _DARK_ROYGBIV,
+}
+
+
+def find_comic_sans() -> str:
+    plat = platform.system()
+    if plat == "Darwin":
+        return "/System/Library/Fonts/Supplemental/Comic Sans MS.ttf"
+    else:
+        return "Comic-Sans-MS"  # Hope and pray.
+
+
+def colorchar(args, color, char):
+    label = char
+    if char.isspace():
+        label = f"\\{char}"
+
+    return [
+        "(",
+        "-fill",
+        color,
+        f"label:{label}",
+        ")",
+    ]
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Render some rainbow text")
+    parser.add_argument(
+        "-d",
+        "--dryrun",
+        action="store_true",
+        help="Print the ImageMagick command instead of running it",
+    )
+    parser.add_argument(
+        "-f",
+        "--font",
+        type=str,
+        default=find_comic_sans(),
+        help="The font to use",
+    )
+    parser.add_argument(
+        "-p",
+        "--pointsize",
+        type=int,
+        default=64,
+        help="The point size for the text",
+    )
+    parser.add_argument(
+        "-t",
+        "--theme",
+        choices=["light", "dark"],
+        default="light",
+        help="The color theme to use",
+    )
+    parser.add_argument(
+        "input",
+        type=str,
+        help="The input string to render",
+    )
+    parser.add_argument(
+        "output",
+        type=Path,
+        help="The filename to write to",
+    )
+    args = parser.parse_args()
+
+    convert = [
+        "magick",
+        "convert",
+        "-background",
+        "none",
+        "-font",
+        args.font,
+        "-pointsize",
+        str(args.pointsize),
+    ]
+    for (color, char) in zip(
+        itertools.cycle(_THEME_MAP[args.theme].values()), args.input
+    ):
+        convert += colorchar(args, color, char)
+
+    convert += ["+append", str(args.output)]
+
+    if args.dryrun:
+        print(shlex.join(convert))
+    else:
+        subprocess.run(convert)
