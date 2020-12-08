@@ -13,7 +13,7 @@ IGNORE_PATTERNS = if File.exist?(VBNLA_CONFIG)
                     []
                   end
 
-LOGFORMAT = %r{
+LOGFORMAT = /
   (?<ip>.+)
   \s
   -
@@ -22,25 +22,27 @@ LOGFORMAT = %r{
   \s
   \[(?<time>.+)\]
   \s
-  \"(?<method>\S+)\s(?<req>\S+)\s(?<proto>\S+)\"
+  "(?<method>\S+)\s(?<req>\S+)\s(?<proto>\S+)"
   \s
   (?<stat>\d{3})
   \s
   (?<size>\d+)
   \s
-  \"(?<ref>.*)\"
+  "(?<ref>.*)"
   \s
-  \"(?<ua>.*)\"
-}x.freeze
+  "(?<ua>.*)"
+/x.freeze
 
-def top10_pretty(hist)
-  hist.to_a.max_by(10, &:last).map { |e| "#{e[0]} -> #{e[1]}" }.join("\n\t")
+N = ENV["N"].to_i || 10
+
+def topn_pretty(hist)
+  hist.to_a.max_by(N, &:last).map { |e| "#{e[0]} -> #{e[1]}" }.join("\n\t")
 end
 
 hist = Hash.new { |hash, key| hash[key] = Hash.new(0) }
 lines = 1
 
-STDIN.each_line do |line|
+$stdin.each_line do |line|
   lines += 1
   hsh = LOGFORMAT.match(line).named_captures rescue next
 
@@ -55,15 +57,15 @@ hist["req"].reject! { |req| IGNORE_PATTERNS.any? { |pat| File.fnmatch?(pat, req)
 puts <<~SUMMARY
   Total requests: #{lines}
   Unique IPs: #{hist["ip"].size}
-  Top 10 IPs:
-  \t#{top10_pretty hist["ip"]}
+  Top #{N} IPs:
+  \t#{topn_pretty hist["ip"]}
 
-  Top 10 UAs:
-  \t#{top10_pretty hist["ua"]}
+  Top #{N} UAs:
+  \t#{topn_pretty hist["ua"]}
 
-  Top 10 requests:
-  \t#{top10_pretty hist["req"]}
+  Top #{N} requests:
+  \t#{topn_pretty hist["req"]}
 
-  Top 10 referrers:
-  \t#{top10_pretty hist["ref"]}
+  Top #{N} referrers:
+  \t#{topn_pretty hist["ref"]}
 SUMMARY
