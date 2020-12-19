@@ -33,7 +33,7 @@ LOGFORMAT = /
   "(?<ua>.*)"
 /x.freeze
 
-N = ENV["N"].to_i || 10
+N = ENV.fetch("N", 10).to_i
 
 def topn_pretty(hist)
   hist.to_a.max_by(N, &:last).map { |e| "#{e[0]} -> #{e[1]}" }.join("\n\t")
