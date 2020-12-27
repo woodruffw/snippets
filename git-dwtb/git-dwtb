@@ -8,15 +8,25 @@
 
 set -eo pipefail
 
+function __git_find_main_branch() {
+  mapfile -t branches < <(git branch --format='%(refname:short)')
+  for branch in "${branches[@]}"; do
+    [[ "${branch}" == "main" || "${branch}" == "master" ]] \
+      && echo -n "${branch}" \
+      && return
+  done
+}
+
 remote="${REMOTE:-origin}"
 branchname=$(git rev-parse --abbrev-ref HEAD)
+destination=$(__git_find_main_branch)
 
-if [[ "${branchname}" == "master" || "${branchname}" == "HEAD" ]]; then
-  >&2 echo "Don't run me on master or a symbolic ref!"
+if [[ "${branchname}" == "${destination}" || "${branchname}" == "HEAD" ]]; then
+  >&2 echo "Don't run me on ${destination} or a symbolic ref!"
   exit 1
 fi
 
-git checkout master && \
-  git pull "${remote}" master && \
+git checkout "${destination}" && \
+  git pull "${remote}" "${destination}" && \
   git branch -D "${branchname}" && \
   git remote prune "${remote}"

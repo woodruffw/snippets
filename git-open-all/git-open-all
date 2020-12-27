@@ -6,8 +6,17 @@ set -eo pipefail
 
 [[ -n "${EDITOR}" ]] || { >&2 echo "Refusing to continue without EDITOR."; exit; }
 
+function __git_find_main_branch() {
+  mapfile -t branches < <(git branch --format='%(refname:short)')
+  for branch in "${branches[@]}"; do
+    [[ "${branch}" == "main" || "${branch}" == "master" ]] \
+      && echo -n "${branch}" \
+      && return
+  done
+}
+
 current=$(git rev-parse --abbrev-ref HEAD)
-base=${1:-master}
+base=${1:-$(__git_find_main_branch)}
 merge_base=$(git merge-base "${current}" "${base}")
 
 # TODO: Instead of filtering renamed files, open their new path.
