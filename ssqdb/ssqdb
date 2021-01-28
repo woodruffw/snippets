@@ -21,7 +21,7 @@ require "erb"
 require "cgi"
 require "json"
 
-VERSION = 11
+VERSION = 12
 
 GENERATED_AT = Time.now.to_i
 
@@ -104,7 +104,7 @@ JS = <<~JS
 
   document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("random-quote").addEventListener("click", randomQuote);
-    var urlifiers = document.querySelectorAll("#urlify-btn");
+    var urlifiers = document.querySelectorAll(".urlify-btn");
 
     urlifiers.forEach(function(urlifier) {
       urlifier.addEventListener("click", urlify);
@@ -113,9 +113,11 @@ JS = <<~JS
 JS
 
 HEADER = <<~HEADER
-  <html>
+  <!DOCTYPE html>
+  <html lang="en">
     <head>
       <meta charset="UTF-8">
+      <meta name="ssqdb-version" content="#{VERSION}">
       <meta name="generated-at" content="#{GENERATED_AT}">
       <title><%= title %> <%= " - quote \\#\#{index}" if defined? index %></title>
       <link rel="stylesheet" href="ssqdb.css">
@@ -145,7 +147,7 @@ QUOTE = <<~QUOTE
   <h5 class="quote-header">
     quote #<%= index %>
     <a class="quote-link" href="quote<%= index %>.html">(permalink)</a>
-    <a class="quote-link" href="#" id="urlify-btn">(urls)</a>
+    <a class="quote-link urlify-btn" href="#">(urls)</a>
     <% if opts[:json] %>
       <a class="quote-link" href="quote<%= index %>.json">(json)</a>
     <% end %>
@@ -206,6 +208,23 @@ ABOUT_PAGE = <<~ABOUT
     the latest version can be found <a href="https://yossarian.net/snippets#ssqdb">here</a>.
   </p>
 
+  <h2>pesudo-API</h2>
+
+  <p>
+    in addition to the HTML pages, ssqdb provides a static pseudo-API:
+    <ul>
+      <li>
+        <code>/count</code> &mdash; the total number of quotes being served
+      </li>
+      <li>
+        <code>/quoteNUM.json</code> &mdash; the quote at the <code>NUM</code>th index, starting at zero
+      </li>
+    </ul>
+
+    note: JSON quotes are only available if <code>--json</code> was used during generation.
+    expect 404s otherwise.
+  </p>
+
   #{FOOTER}
 ABOUT
 
@@ -229,7 +248,7 @@ def version
 end
 
 def verbose(msg, level: 0)
-  STDERR.puts "#{"\t" * level}[+] #{msg}"
+  warn "#{"\t" * level}[+] #{msg}"
 end
 
 opts = {
