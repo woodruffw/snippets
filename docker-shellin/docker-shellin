@@ -23,6 +23,9 @@ installed selecta || die "Requires selecta"
 installed docker || die "Requires docker"
 
 images=$(docker ps --format "{{.ID}} {{.Image}}")
+
+[[ -n "${images}" ]] || { echo "No running containers to select from."; exit; }
+
 image=$(selecta <<< "${images}" | awk '{ print $1 }')
 
 [[ -n "${image}" ]] && docker exec -it "${image}" "${CONTAINER_SHELL}"
