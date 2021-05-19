@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# quotecard: generate a "card" for a quote, with an optional author
+
+set -euo pipefail
+
+function die {
+  echo "Error: $*" >&2
+  exit 1
+}
+
+function installed {
+  cmd=$(command -v "${1}")
+
+  [[ -n  "${cmd}" ]] && [[ -f "${cmd}" ]]
+  return ${?}
+}
+
+installed convert || die "Missing convert (imagemagick)"
+
+if [[ ${#} -eq 3 ]]; then
+  quote="${1}"
+  author="\n\n - ${2}"
+  output="${3}"
+elif [[ ${#} -eq 2 ]]; then
+  quote="${1}"
+  author=""
+  output="${2}"
+else
+  >&2 echo "Usage: quotecard <quote> [author] <output>"
+  exit 1
+fi
+
+font="${FONT:-Courier}"
+
+# No idea if this is the most optimal technique.
+convert \
+  -size 1280x720 \
+  xc:white \
+  -font "${font}" \
+  \( \
+    caption:"\"${quote}\"${author}" \
+    -geometry +10+10 \
+  \) \
+  -composite \
+  "${output}"
