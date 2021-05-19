@@ -121,8 +121,8 @@ HEADER = <<~HEADER
       <meta name="generated-at" content="#{GENERATED_AT}">
       <% if defined?(index) && opts[:cards] %>
         <meta property="og:image" content="quote<%= index %>.png">
-        <meta property="og:title" content="<%= title %> - quote #<%= index %>"
-        <meta property="og:url" content="quote<%= index %>.html"
+        <meta property="og:title" content="<%= title %> - quote #<%= index %>">
+        <meta property="og:url" content="quote<%= index %>.html">
         <meta name="twitter:card" content="summary_large_image">
       <% end %>
       <title><%= title %> <%= " - quote \\#\#{index}" if defined? index %></title>
