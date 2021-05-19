@@ -120,9 +120,9 @@ HEADER = <<~HEADER
       <meta name="ssqdb-version" content="#{VERSION}">
       <meta name="generated-at" content="#{GENERATED_AT}">
       <% if defined?(index) && opts[:cards] %>
-        <meta property="og:image" content="quote<%= index %>.png">
+        <meta property="og:image" content="<%= webroot %>/quote<%= index %>.png">
         <meta property="og:title" content="<%= title %> - quote #<%= index %>">
-        <meta property="og:url" content="quote<%= index %>.html">
+        <meta property="og:url" content="<%= webroot %>/quote<%= index %>.html">
         <meta name="twitter:card" content="summary_large_image">
       <% end %>
       <title><%= title %> <%= " - quote \\#\#{index}" if defined? index %></title>
@@ -259,6 +259,7 @@ ABOUT
 def help
   puts <<~HELP
     Usage: #{$PROGRAM_NAME} <quote file> [output directory] [title] [options]
+
     Options:
       --cards       Generate a "card" image for each quote, for Open Graph metadata
       --author-irc  Treat each quote as beginning with "<author>", where needed
@@ -267,6 +268,10 @@ def help
       --help        Print this help message
       --version     Print version information
       --verbose     Write verbose information to stderr
+
+    Environment:
+      AUTHOR        Use this string as the author, where needed
+      WEBROOT       Use this path to form absolute URLs, where needed
   HELP
 
   exit 0
@@ -298,6 +303,7 @@ version if opts[:version]
 quotes_file = ARGV.shift || abort("I need a file to load quotes from.")
 output_dir  = ARGV.shift || __dir__
 title       = CGI.escapeHTML(ARGV.shift || "ssqdb")
+webroot     = ENV.fetch "WEBROOT", "."
 
 abort("That isn't a file.")              unless File.file?(quotes_file)
 abort("Output directory doesn't exist.") unless Dir.exist?(output_dir)
