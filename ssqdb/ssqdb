@@ -21,7 +21,7 @@ require "erb"
 require "cgi"
 require "json"
 
-VERSION = 12
+VERSION = 13
 
 GENERATED_AT = Time.now.to_i
 
@@ -119,6 +119,9 @@ HEADER = <<~HEADER
       <meta charset="UTF-8">
       <meta name="ssqdb-version" content="#{VERSION}">
       <meta name="generated-at" content="#{GENERATED_AT}">
+      <% if defined?(index) && opts[:cards] %>
+        <meta property="og:image" content="quote<%= index %>.png">
+      <% end %>
       <title><%= title %> <%= " - quote \\#\#{index}" if defined? index %></title>
       <link rel="stylesheet" href="ssqdb.css">
       <script src="ssqdb.js" defer></script>
@@ -150,6 +153,9 @@ QUOTE = <<~QUOTE
     <a class="quote-link urlify-btn" href="#">(urls)</a>
     <% if opts[:json] %>
       <a class="quote-link" href="quote<%= index %>.json">(json)</a>
+    <% end %>
+    <% if opts[:cards] %>
+      <a class="quote-link" href="quote<%= index %>.png">(card)</a>
     <% end %>
   </h5>
   <pre class="quote-text">
@@ -184,7 +190,7 @@ ABOUT_PAGE = <<~ABOUT
   </p>
 
   <p>
-    usage: <code>$ ssqdb.rb /path/to/your/quotes.txt</code>
+    usage: <code>$ ssqdb /path/to/your/quotes.txt</code>
   </p>
 
   <p>
@@ -206,6 +212,25 @@ ABOUT_PAGE = <<~ABOUT
 
   <p>
     the latest version can be found <a href="https://yossarian.net/snippets#ssqdb">here</a>.
+  </p>
+
+  <h2>quote cards</h2>
+
+  <p>
+    ssqdb can use
+    <a href="https://yossarian.net/snippets#quotecard"><code>quotecard</code></a>
+    to generate an image for each quote,
+    and embed those images as Open Graph metadata. this is chiefly useful for
+    quote DBs where each quote has a single author.
+  </p>
+
+  <p>
+    quote cards can be enabled by passing <code>--cards</code>; the author for
+    each quote is blank by default, but can be taken from either
+    <code>$AUTHOR</code> in the environment, or from "IRC-formatted" quotes via
+    <code>&lt;author&gt; foo</code> when <code>--author-irc</code> is passed,
+    or from quotes that end with <code>- author</code> when
+    <code>--author-tail</code> is passed.
   </p>
 
   <h2>pesudo-API</h2>
@@ -232,10 +257,13 @@ def help
   puts <<~HELP
     Usage: #{$PROGRAM_NAME} <quote file> [output directory] [title] [options]
     Options:
-      --json      Generate JSON files in addition to HTML
-      --help      Print this help message
-      --version   Print version information
-      --verbose   Write verbose information to stderr
+      --cards       Generate a "card" image for each quote, for Open Graph metadata
+      --author-irc  Treat each quote as beginning with "<author>", where needed
+      --author-tail Treat each quote as ending with "- Author", where needed
+      --json        Generate JSON files in addition to HTML
+      --help        Print this help message
+      --version     Print version information
+      --verbose     Write verbose information to stderr
   HELP
 
   exit 0
@@ -252,6 +280,9 @@ def verbose(msg, level: 0)
 end
 
 opts = {
+  cards: !!ARGV.delete("--cards"),
+  author_irc: !!ARGV.delete("--author-irc"),
+  author_tail: !!ARGV.delete("--author-tail"),
   json: !!ARGV.delete("--json"),
   help: !!ARGV.delete("--help") || !!ARGV.delete("-h"),
   version: !!ARGV.delete("--version"),
@@ -305,5 +336,27 @@ if opts[:json]
     File.write(json_file, blob.to_json)
 
     verbose "generated #{json_file}", level: 1
+  end
+end
+
+if opts[:cards]
+  verbose "generating individual card images (requested)"
+
+  quotes.each_with_index do |quote, index|
+    if opts[:author_irc]
+      author, quote = quote.split " ", 2
+    elsif opts[:author_tail]
+      *quote_lines, author = quote.split "\n"
+      author.delete_prefix! "- "
+      quote = quote_lines.join("\n").chomp!
+    else
+      author = ENV.fetch "AUTHOR", ""
+    end
+
+    card_file = File.join(output_dir, "quote#{index}.png")
+
+    system "quotecard", quote, author, card_file, exception: true
+
+    verbose "generated #{card_file}", level: 1
   end
 end
