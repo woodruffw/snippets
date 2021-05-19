@@ -21,7 +21,7 @@ require "erb"
 require "cgi"
 require "json"
 
-VERSION = 15
+VERSION = 16
 
 GENERATED_AT = Time.now.to_i
 
