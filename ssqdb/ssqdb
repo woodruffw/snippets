@@ -21,7 +21,7 @@ require "erb"
 require "cgi"
 require "json"
 
-VERSION = 13
+VERSION = 14
 
 GENERATED_AT = Time.now.to_i
 
@@ -121,6 +121,7 @@ HEADER = <<~HEADER
       <meta name="generated-at" content="#{GENERATED_AT}">
       <% if defined?(index) && opts[:cards] %>
         <meta property="og:image" content="quote<%= index %>.png">
+        <meta name="twitter:card" content="summary_large_image">
       <% end %>
       <title><%= title %> <%= " - quote \\#\#{index}" if defined? index %></title>
       <link rel="stylesheet" href="ssqdb.css">
