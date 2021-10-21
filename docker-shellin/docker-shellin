@@ -22,7 +22,7 @@ CONTAINER_SHELL="${CONTAINER_SHELL:-bash}"
 installed selecta || die "Requires selecta"
 installed docker || die "Requires docker"
 
-images=$(docker ps --format "{{.ID}} {{.Image}}")
+images=$(docker ps --format "{{.ID}} {{.Image}} {{.Names}}")
 
 [[ -n "${images}" ]] || { echo "No running containers to select from."; exit; }
 
