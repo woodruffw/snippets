@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+# mupdf-prompt: wrap mupdf for viewing a PDF, but with a password dialog
+# if the PDF fails to open by default.
+#
+# uses YAD for the password dialog.
+
+set -euo pipefail
+
+function errmsg {
+  installed notify-send && notify-send --urgency=critical "$(basename "${0}")" "$*"
+  echo "Error: $*" >&2
+}
+
+function die {
+  errmsg "Error: $*" >&2
+  exit 1
+}
+
+function installed {
+  cmd=$(command -v "${1}")
+
+  [[ -n  "${cmd}" ]] && [[ -f "${cmd}" ]]
+  return ${?}
+}
+
+installed mupdf || die "Missing mupdf"
+installed yad || die "Missing yad"
+
+if ! mupdf "${@}" ; then
+  record=$(
+    yad \
+      --separator=$'\x01' \
+      --form \
+      --title="MuPDF" \
+      --text-align=left \
+      --field="Password:H" \
+    || die "No password given (interrupted)."
+  )
+
+  password=$(awk -F $'\x01' '{ print $1 }' <<< "${record}")
+
+  [[ -z "${password}" ]] && die "No password given."
+
+  # Try again, this time with the given password.
+  mupdf -p "${password}" "${@}"
+fi
