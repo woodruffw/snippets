@@ -27,7 +27,9 @@ function installed {
 installed mupdf || die "Missing mupdf"
 installed yad || die "Missing yad"
 
-if ! mupdf "${@}" ; then
+if ! output=$(mupdf "${@}" 2>&1) ; then
+  grep "password" - <<< "${output}" || die "mupdf failure: ${output}"
+
   record=$(
     yad \
       --separator=$'\x01' \
