@@ -41,7 +41,7 @@ input_mosaic = inputs.each_slice(columns)
 
 args << "-filter_complex"
 
-filter = ""
+filter = +""
 filter << "nullsrc=size=#{width}x#{height} [base];\n"
 
 input_mosaic.each_with_index do |row, i|
