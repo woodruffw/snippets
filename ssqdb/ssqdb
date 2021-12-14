@@ -21,7 +21,7 @@ require "erb"
 require "cgi"
 require "json"
 
-VERSION = 16
+VERSION = 17
 
 GENERATED_AT = Time.now.to_i
 
@@ -117,6 +117,7 @@ HEADER = <<~HEADER
   <html lang="en">
     <head>
       <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
       <meta name="ssqdb-version" content="#{VERSION}">
       <meta name="generated-at" content="#{GENERATED_AT}">
       <% if defined?(index) && opts[:cards] %>
