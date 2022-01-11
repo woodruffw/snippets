@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
-# ffframes: Extract the frames from a video, at the specified rate
+# ffframes: Extract the frames from a video.
+# Use the `FRAMERATE` variable to control the framerate; by default `-vsync 0` will be used.
 
 set -eo pipefail
 
+FRAMERATE=""
+
 function help {
-  echo "Usage: ffframes <input> <rate> <output-dir>"
+  echo "Usage: ffframes <input> <output-dir>"
   exit
 }
 
@@ -16,8 +19,15 @@ function installed {
     return ${?}
 }
 
-[[ $# -eq 3 && -f $1 && -n $2 && ! -e $3 ]] || help
+[[ $# -eq 2 && -f $1 && ! -e $2 ]] || help
 installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
 
-mkdir -p "${3}"
-ffmpeg -i "${1}" -vf fps="${2}" "${3}/frame-%05d.bmp"
+mkdir -p "${2}"
+
+if [[ -z "${FRAMERATE}" ]]; then
+  flags="-vsync 0"
+else
+  flags="-vf fps=${FRAMERATE}"
+fi
+
+ffmpeg -i "${1}" ${flags} "${2}/frame-%05d.png"
