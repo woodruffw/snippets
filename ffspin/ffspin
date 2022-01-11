@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
-# ffspin: Create a spinning animation of a still image.
+# ffspin: Create a spinning animation of a still image or a directory of stills.
 
 set -eo pipefail
 
 INCREMENT=15
-FRAMERATE=25
+FRAMERATE=30
+BGCOLOR=white
 
 function help {
   echo "Usage: ffspin <input> <output>"
@@ -19,14 +20,28 @@ function installed {
     return ${?}
 }
 
-[[ $# -eq 2 && -f $1 && ! -f $2 ]] || help
+function get-frame {
+  idx=$(("${1}" % "${#input_frames[@]}"))
+
+  echo "${input_frames["${idx}"]}"
+}
+
+[[ $# -eq 2 && -e $1 && ! -f $2 ]] || help
 installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+# If our input is a directory, treat each file entry as a sorted frame.
+# Otherwise, use just the input file itself as the sole input frame.
+if [[ -d "${1}" ]]; then
+  input_frames=($(find "${1}" -type f | sort -V))
+else
+  input_frames=("${1}")
+fi
 
 tmpdir=$(mktemp -d)
 trap 'rm -rf "${tmpdir}"' exit
 
-for (( i = 0; i < 360; i+=INCREMENT )); do
-  ffmpeg -i "${1}" -pix_fmt rgb8 -vf "rotate=${i}*PI/180" "${tmpdir}/${i}.gif"
+for (( i = 0, j = 0; i < 360; i+=INCREMENT, j++ )); do
+  ffmpeg -loglevel quiet -i "$(get-frame "${j}")" -pix_fmt rgb8 -vf "rotate=${i}*PI/180:c=${BGCOLOR}@0" "${tmpdir}/${i}.gif"
 done
 
 frames=($(find "${tmpdir}" -type f | sort -V))
@@ -35,4 +50,4 @@ for frame in "${frames[@]}"; do
   echo "file '${frame}'" >> "${tmpdir}/frames.txt"
 done
 
-ffmpeg -r "${FRAMERATE}" -f concat -safe 0 -i "${tmpdir}/frames.txt" "${2}"
+ffmpeg -loglevel quiet -r "${FRAMERATE}" -f concat -safe 0 -i "${tmpdir}/frames.txt" "${2}"
