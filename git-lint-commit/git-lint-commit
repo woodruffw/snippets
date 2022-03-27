@@ -70,6 +70,9 @@ w 2, "An empty line should separate body and subject" unless body.first.empty?
 
 lines.each_with_index do |line, i|
   next if i < 2
+  # This sentinel indicates the start of an inline diff, which doesn't appear
+  # in the commit message and therefore shouldn't be linted.
+  break if line == "# ------------------------ >8 ------------------------"
   next if line.start_with? "#"
 
   len = line.size
