@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# x509dump: a convenience wrapper for `openssl x509`
+
+set -eo pipefail
+
+function x509 {
+  # macOS's default OpenSSL is obnoxiously old and often fails to fully decode
+  # X.509v3 extensions, so we try to use Homebrew's, if available.
+  if [[ "$(uname)" = "Darwin" && -n "$(command -v brew)" ]]; then
+    "$(brew --prefix openssl)/bin/openssl" x509 "${@}"
+  else
+    openssl x509 "${@}"
+  fi
+}
+
+input="${1}"
+if [[ -z "${input}" ]]; then
+  2>&1 echo "Usage: x509dump <input>"
+fi
+
+suffix="${input##*.}"
+suffix="${suffix,,}"
+if [[ "${suffix}" = "der" ]]; then
+  inform="DER"
+elif [[ "${suffix}" = "pem" ]]; then
+  inform="PEM"
+else
+  2>&1 echo "Barf: expected filename ending in .der or .pem"
+  exit 1
+fi
+
+x509 -in "${input}" -inform "${inform}" -text
