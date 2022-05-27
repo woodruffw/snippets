@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+# asn1dump: a convenience wrapper for `openssl asn1parse`
+
+set -eo pipefail
+
+function asn1parse {
+  # macOS's default OpenSSL is obnoxiously old and often fails to fully decode
+  # X.509v3 extensions, so we try to use Homebrew's, if available.
+  if [[ "$(uname)" = "Darwin" && -n "$(command -v brew)" ]]; then
+    "$(brew --prefix openssl)/bin/openssl" asn1parse "${@}"
+  else
+    openssl asn1parse "${@}"
+  fi
+}
+
+input="${1}"
+if [[ -z "${input}" ]]; then
+  2>&1 echo "Usage: asn1dump <input>"
+fi
+
+suffix="${input##*.}"
+suffix="${suffix,,}"
+if [[ "${suffix}" = "der" ]]; then
+  inform="DER"
+elif [[ "${suffix}" = "ber" ]]; then
+  inform="BER"
+else
+  2>&1 echo "Barf: expected filename ending in .der or .ber"
+  exit 1
+fi
+
+asn1parse -in "${input}" -inform "${inform}" -dump
