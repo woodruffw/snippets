@@ -23,10 +23,10 @@ suffix="${input##*.}"
 suffix="${suffix,,}"
 if [[ "${suffix}" = "der" ]]; then
   inform="DER"
-elif [[ "${suffix}" = "ber" ]]; then
-  inform="BER"
+elif [[ "${suffix}" = "pem" ]]; then
+  inform="PEM"
 else
-  2>&1 echo "Barf: expected filename ending in .der or .ber"
+  2>&1 echo "Barf: expected filename ending in .der or .pem"
   exit 1
 fi
 
