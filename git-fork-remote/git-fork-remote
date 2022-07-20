@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# git-fork-remote: automatically add a remote based on a GitHub username
+
+set -eo pipefail
+
+user="${1}"
+
+[[ -n "${user}" ]] || { >&2 echo "Usage: gh-fork-remote <user>"; exit 1; }
+
+# NOTE: The base directory isn't technically guaranteed to be the remote
+# repository name, but it almost always is. Assume the happy path here.
+repo=$(basename "$(git rev-parse --show-toplevel)")
+
+fork="git@github.com:${user}/${repo}.git"
+
+>&2 echo "[+] Creating remote: ${user} -> ${fork}"
+
+git remote add "${user}" "${fork}"
+git fetch "${user}"
