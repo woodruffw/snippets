@@ -10,7 +10,7 @@ require "open-uri"
 
 URL = "https://raw.githubusercontent.com/iamcal/emoji-data/master/emoji.json"
 
-emojis = JSON.parse(open(URL).read)
+emojis = JSON.parse(URI.open(URL).read)
 
 emojis.each do |emoji|
   codepoints = emoji["unified"].split("-").map { |cp| cp.to_i 16 }
