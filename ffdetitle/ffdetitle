@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# ffdetitle: remove title metadata from one or more inputs
+
+set -eo pipefail
+
+function help {
+    echo "Usage: ffdetitle <input> [input ...]"
+    exit
+}
+
+function installed {
+    cmd=$(command -v "${1}")
+
+    [[ -n "${cmd}" ]] && [[ -f "${cmd}" ]]
+    return ${?}
+}
+
+[[ $# -ge 1 ]] || help
+installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
+
+for input in "${@}"; do
+  suffix="${input##*.}"
+  ffmpeg -i "${input}" -metadata title= -c copy "${input}.tmp.${suffix}"
+  mv "${input}.tmp.${suffix}" "${input}"
+done
