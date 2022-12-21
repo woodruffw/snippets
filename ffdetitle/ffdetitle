@@ -21,6 +21,6 @@ installed ffmpeg || { >&2 echo "Missing ffmpeg."; exit 1; }
 
 for input in "${@}"; do
   suffix="${input##*.}"
-  ffmpeg -i "${input}" -metadata title= -c copy "${input}.tmp.${suffix}"
+  ffmpeg -i "${input}" -metadata title= -c copy -map 0 "${input}.tmp.${suffix}"
   mv "${input}.tmp.${suffix}" "${input}"
 done
