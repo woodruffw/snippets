@@ -19,15 +19,20 @@ if [[ -z "${input}" ]]; then
   2>&1 echo "Usage: x509dump <input>"
 fi
 
-suffix="${input##*.}"
-suffix="${suffix,,}"
-if [[ "${suffix}" = "der" ]]; then
-  inform="DER"
-elif [[ "${suffix}" = "pem" ]]; then
+if [[ "${input}" == "-" ]]; then
+  input="/dev/stdin"
   inform="PEM"
 else
-  2>&1 echo "Barf: expected filename ending in .der or .pem"
-  exit 1
+  suffix="${input##*.}"
+  suffix="${suffix,,}"
+  if [[ "${suffix}" = "der" ]]; then
+    inform="DER"
+  elif [[ "${suffix}" = "pem" ]]; then
+    inform="PEM"
+  else
+    2>&1 echo "Barf: expected filename ending in .der or .pem"
+    exit 1
+  fi
 fi
 
 x509 -in "${input}" -inform "${inform}" -text
