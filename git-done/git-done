@@ -1,0 +1,37 @@
+#!/usr/bin/env sh
+
+# git-done: "done with this branch":
+#  * check back out to <main branch>
+#  * pull "${REMOTE}"/<main branch>
+#  * delete the original branch
+#  * prune "${REMOTE}"
+
+set -eu
+
+__git_find_main_branch() {
+  for branch in main master; do
+    if git show-ref --verify --quiet "refs/heads/${branch}"; then
+      printf '%s' "${branch}"
+      return
+    fi
+  done
+}
+
+remote="${REMOTE:-origin}"
+branchname=$(git rev-parse --abbrev-ref HEAD)
+destination=$(__git_find_main_branch)
+
+if [ -z "${destination}" ]; then
+  echo "Could not find a main or master branch!" >&2
+  exit 1
+fi
+
+if [ "${branchname}" = "${destination}" ] || [ "${branchname}" = "HEAD" ]; then
+  echo "Don't run me on ${destination} or a symbolic ref!" >&2
+  exit 1
+fi
+
+git checkout "${destination}"
+git pull "${remote}" "${destination}"
+git branch -D "${branchname}"
+git remote prune "${remote}"
